@@ -1,0 +1,18 @@
+{
+    "id": "com.zam.dice",
+    "name": "Dice Roller",
+    "version": "1.0.0",
+    "description": "Roll dice with /roll — e.g. /roll 2d6+1.",
+    "author": "az4521",
+    "entry": "main.js",
+    "capabilities": ["commands", "messages:send"],
+    "settings": [
+        {
+            "key": "showRolls",
+            "type": "toggle",
+            "label": "Show individual dice",
+            "default": true,
+            "description": "Include each die's value, e.g. 2d6 -> 8 (3, 5)."
+        }
+    ]
+}

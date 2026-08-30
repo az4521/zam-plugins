@@ -1,0 +1,13 @@
+{
+    "schema": 1,
+    "plugins": [
+        {
+            "id": "com.zam.dice",
+            "name": "Dice Roller",
+            "version": "1.0.0",
+            "description": "Roll dice with /roll — e.g. /roll 2d6+1.",
+            "author": "az4521",
+            "path": "plugins/com.zam.dice"
+        }
+    ]
+}
