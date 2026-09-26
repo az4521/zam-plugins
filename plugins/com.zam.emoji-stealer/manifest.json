@@ -1,0 +1,39 @@
+{
+    "id": "com.zam.emoji-stealer",
+    "name": "Emoji Stealer",
+    "version": "1.0.0",
+    "description": "Right-click or long-press a custom emoji to copy it into your personal pack or a room/space pack you can edit.",
+    "author": "az4521",
+    "entry": "main.js",
+    "capabilities": ["ui", "messages:read", "rooms:read", "storage", "unsafe"],
+    "settings": [
+        {
+            "key": "rightClick",
+            "type": "toggle",
+            "label": "Right-click to steal",
+            "default": true,
+            "description": "Right-clicking a custom emoji opens the steal popover instead of the browser menu."
+        },
+        {
+            "key": "longPress",
+            "type": "toggle",
+            "label": "Long-press to steal",
+            "default": true,
+            "description": "Long-pressing a custom emoji on touch screens opens the steal popover (replaces the message menu for that press)."
+        },
+        {
+            "key": "reactions",
+            "type": "toggle",
+            "label": "Include reactions",
+            "default": true,
+            "description": "Also steal from custom emoji reactions. Long-pressing a custom reaction then no longer shows who reacted."
+        },
+        {
+            "key": "messageAction",
+            "type": "toggle",
+            "label": "\"Steal emoji\" message action",
+            "default": true,
+            "description": "Add a Steal emoji entry to the menu of messages that contain custom emoji."
+        }
+    ]
+}

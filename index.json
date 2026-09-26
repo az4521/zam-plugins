@@ -8,6 +8,14 @@
             "description": "Roll dice with /roll — e.g. /roll 2d6+1.",
             "author": "az4521",
             "path": "plugins/com.zam.dice"
+        },
+        {
+            "id": "com.zam.emoji-stealer",
+            "name": "Emoji Stealer",
+            "version": "1.0.0",
+            "description": "Right-click or long-press a custom emoji to copy it into your personal pack or a room/space pack you can edit.",
+            "author": "az4521",
+            "path": "plugins/com.zam.emoji-stealer"
         }
     ]
 }
