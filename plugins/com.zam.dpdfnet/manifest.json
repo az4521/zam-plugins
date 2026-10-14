@@ -1,0 +1,934 @@
+{
+  "id": "com.zam.dpdfnet",
+  "name": "DPDFNet noise filter",
+  "version": "1.0.0",
+  "description": "Clearer AI noise removal for your microphone in calls (Ceva's DPDFNet-2). Runs on your device; heavier than the built-in DeepFilterNet3, which stands in on devices too slow for it.",
+  "author": "az4521",
+  "entry": "main.js",
+  "minAppVersion": "1.20.0",
+  "capabilities": [
+    "audio",
+    "native",
+    "storage"
+  ],
+  "assets": [
+    {
+      "path": "assets/worklet.js",
+      "sha256": "68715d161a734185d2520899b3c798f3aa37cfba5748ffd7234b3ab76bbaf770",
+      "size": 17454
+    },
+    {
+      "path": "assets/worker.js",
+      "sha256": "6aa5f7a569c1857839011cfd99ca8e5ce926d1ec3f2284eb754c3d2b01d3cf6a",
+      "size": 14482
+    },
+    {
+      "path": "assets/model.onnx",
+      "sha256": "7f0575a5cec0ba4ffd8f8bd657e06d007e4ccdd955d76faab922b9d3291dc14b",
+      "size": 10493337
+    },
+    {
+      "path": "assets/ort.wasm.min.mjs",
+      "sha256": "219e6a1fc8a9938268d18efca3c91d310bd2f4a59bbd13744df5b2b7fc6cee3b",
+      "size": 50126
+    },
+    {
+      "path": "assets/ort-wasm-simd-threaded.mjs",
+      "sha256": "e13f7f94fc51b4ca72b12faeb1ee95f4ace6dfbc8939bc718aabdc0a27c4299b",
+      "size": 24381
+    },
+    {
+      "path": "assets/ort-wasm-simd-threaded.wasm",
+      "sha256": "3398c10d07d229bd91b364548e130e0e51a8e5704b88c7c083ebbeb78842dee2",
+      "size": 14239897
+    }
+  ],
+  "native": {
+    "platforms": {
+      "darwin-arm64": {
+        "host": "native/host.cjs",
+        "files": [
+          {
+            "path": "native/host.cjs",
+            "sha256": "1dbff328cbde889a0a88522589a76036ed5969eea7e6825d5d355abe692bf3de",
+            "size": 5600
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/package.json",
+            "sha256": "0871cd56ac2b9c9dfc834c7eabba819e5d4f966f005388515abb3402b14e0874",
+            "size": 1593
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/backend.js",
+            "sha256": "a79e8019e7276a282987023f9d38d41063a99e563e5e1a6f38a73a7d39ea83ab",
+            "size": 6289
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/binding.js",
+            "sha256": "2a85ac5de943c7222aae5ca2897f52d73891f528d4295b701fab077470c668c0",
+            "size": 1590
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/index.js",
+            "sha256": "019eb02133b94b1f7fdf2d89eb93b590ce1288d271f7b280647fb3978e6391fa",
+            "size": 1602
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/version.js",
+            "sha256": "0a1a7f532f4455ead0678966815c3114730150aa4368ebb5ebd9727425e9003b",
+            "size": 361
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/package.json",
+            "sha256": "4266741a80346e25820ccc494fbffb95e2f652b6dfb5585025be44df3b0d6722",
+            "size": 977
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/backend-impl.js",
+            "sha256": "3d25321895995f7e9480570b9a88f121049adf152e1829d0ecb11218da02d487",
+            "size": 5608
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/backend.js",
+            "sha256": "325aaee7a2649ea27629666f3ca01c0d80b9751e704ce502e43a8352390749b4",
+            "size": 433
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/env-impl.js",
+            "sha256": "35cd8cac33973538eab471b68622c86c35a6896f4307d1a74c9ca0eda7abbac6",
+            "size": 969
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/env.js",
+            "sha256": "22c7647f8ca1c1b83b437a92b95fee1457fcb72866fa029616b8f146dc609be8",
+            "size": 366
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/index.js",
+            "sha256": "d7dd6cc9790e87299099fcd1b0ccb4969c01591d7eec0383a1c64dbea133dd1a",
+            "size": 1955
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/inference-session-impl.js",
+            "sha256": "88d90723a169297855ad3b564b134c6b685b2661316c81f71fc80da1e203bae0",
+            "size": 8996
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/inference-session.js",
+            "sha256": "458be26f316c5068d32a56ddbc30ca0aa687c636e079b3d161a69f0f14a683f1",
+            "size": 467
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/onnx-model.js",
+            "sha256": "667f5fdac4b6df25e17f8a864d4dc619507f541f9fa0aafb6d3572fcca1e25e5",
+            "size": 211
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/onnx-value.js",
+            "sha256": "8446854766f4955ce438a7338216f49223767ecc508bb502b73a3dc1a1f1998e",
+            "size": 211
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/package.json",
+            "sha256": "091a04fa67c7907b98e106fcff8b964e13129754fce72d24f3025b97c4887fa3",
+            "size": 20
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-conversion-impl.js",
+            "sha256": "9815e72c0bb91896035de93b3113a2256a1a998bc53c7b5e6bf5fb4e93714766",
+            "size": 8067
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-conversion.js",
+            "sha256": "28cc462d4a9ea556ecc86c0e6d16a51d61b58d5bc5b4b7b48976b14bc8035bdc",
+            "size": 218
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-factory-impl.js",
+            "sha256": "a3204838a2c14416e4e61c968dc17c663ab3c9b8b2c4a8b7f2a1c5b06e3e5173",
+            "size": 11656
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-factory.js",
+            "sha256": "13b8d735350b828a49bda8aeec50b1dac888cf42268006efc4312f50a88b6906",
+            "size": 215
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-impl-type-mapping.js",
+            "sha256": "333110edbbffdb7575ea340cb341bcaf691862d6594a649db28097f7d8cb19b7",
+            "size": 2995
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-impl.js",
+            "sha256": "11645352ba5d08971344717d3339f86aac560f84f29229b2ebe07f1ec8aa8905",
+            "size": 16458
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-utils-impl.js",
+            "sha256": "e7b1db989d33d54bdd1807b080a0989ff0b10d5f7dd8c93b92bbf293103aa4d5",
+            "size": 2213
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-utils.js",
+            "sha256": "d3f577e90dc2257c72ac728e5e6355c34af0342d971158d9f22b69d22aa97b8d",
+            "size": 213
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor.js",
+            "sha256": "9097114de356750f36f28776fa6ccd08d13694f0f9aac9e7669c30b6c43153f7",
+            "size": 393
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/trace.js",
+            "sha256": "faecd0df94998d786e2085d56aa6003449f1ac3b35c350e0d2762498604e5d72",
+            "size": 2496
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/type-helper.js",
+            "sha256": "7f786da8d2a611ad751c70a74edf4d9acfccd26be8e5c6b1cb730f982892bf32",
+            "size": 212
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/version.js",
+            "sha256": "0a1a7f532f4455ead0678966815c3114730150aa4368ebb5ebd9727425e9003b",
+            "size": 361
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/bin/napi-v6/darwin/arm64/libonnxruntime.1.dylib",
+            "sha256": "685d2be5dba1309c89d3a5324b7fd06a5c42f1a61bfea32d14c4cc28d072121d",
+            "size": 44589928
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/bin/napi-v6/darwin/arm64/onnxruntime_binding.node",
+            "sha256": "a3f993357759b06ae2411f70af60f5e041d04521ea7f0d12cb7546e411a527dd",
+            "size": 266840
+          }
+        ]
+      },
+      "linux-arm64": {
+        "host": "native/host.cjs",
+        "files": [
+          {
+            "path": "native/host.cjs",
+            "sha256": "1dbff328cbde889a0a88522589a76036ed5969eea7e6825d5d355abe692bf3de",
+            "size": 5600
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/package.json",
+            "sha256": "0871cd56ac2b9c9dfc834c7eabba819e5d4f966f005388515abb3402b14e0874",
+            "size": 1593
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/backend.js",
+            "sha256": "a79e8019e7276a282987023f9d38d41063a99e563e5e1a6f38a73a7d39ea83ab",
+            "size": 6289
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/binding.js",
+            "sha256": "2a85ac5de943c7222aae5ca2897f52d73891f528d4295b701fab077470c668c0",
+            "size": 1590
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/index.js",
+            "sha256": "019eb02133b94b1f7fdf2d89eb93b590ce1288d271f7b280647fb3978e6391fa",
+            "size": 1602
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/version.js",
+            "sha256": "0a1a7f532f4455ead0678966815c3114730150aa4368ebb5ebd9727425e9003b",
+            "size": 361
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/package.json",
+            "sha256": "4266741a80346e25820ccc494fbffb95e2f652b6dfb5585025be44df3b0d6722",
+            "size": 977
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/backend-impl.js",
+            "sha256": "3d25321895995f7e9480570b9a88f121049adf152e1829d0ecb11218da02d487",
+            "size": 5608
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/backend.js",
+            "sha256": "325aaee7a2649ea27629666f3ca01c0d80b9751e704ce502e43a8352390749b4",
+            "size": 433
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/env-impl.js",
+            "sha256": "35cd8cac33973538eab471b68622c86c35a6896f4307d1a74c9ca0eda7abbac6",
+            "size": 969
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/env.js",
+            "sha256": "22c7647f8ca1c1b83b437a92b95fee1457fcb72866fa029616b8f146dc609be8",
+            "size": 366
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/index.js",
+            "sha256": "d7dd6cc9790e87299099fcd1b0ccb4969c01591d7eec0383a1c64dbea133dd1a",
+            "size": 1955
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/inference-session-impl.js",
+            "sha256": "88d90723a169297855ad3b564b134c6b685b2661316c81f71fc80da1e203bae0",
+            "size": 8996
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/inference-session.js",
+            "sha256": "458be26f316c5068d32a56ddbc30ca0aa687c636e079b3d161a69f0f14a683f1",
+            "size": 467
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/onnx-model.js",
+            "sha256": "667f5fdac4b6df25e17f8a864d4dc619507f541f9fa0aafb6d3572fcca1e25e5",
+            "size": 211
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/onnx-value.js",
+            "sha256": "8446854766f4955ce438a7338216f49223767ecc508bb502b73a3dc1a1f1998e",
+            "size": 211
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/package.json",
+            "sha256": "091a04fa67c7907b98e106fcff8b964e13129754fce72d24f3025b97c4887fa3",
+            "size": 20
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-conversion-impl.js",
+            "sha256": "9815e72c0bb91896035de93b3113a2256a1a998bc53c7b5e6bf5fb4e93714766",
+            "size": 8067
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-conversion.js",
+            "sha256": "28cc462d4a9ea556ecc86c0e6d16a51d61b58d5bc5b4b7b48976b14bc8035bdc",
+            "size": 218
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-factory-impl.js",
+            "sha256": "a3204838a2c14416e4e61c968dc17c663ab3c9b8b2c4a8b7f2a1c5b06e3e5173",
+            "size": 11656
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-factory.js",
+            "sha256": "13b8d735350b828a49bda8aeec50b1dac888cf42268006efc4312f50a88b6906",
+            "size": 215
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-impl-type-mapping.js",
+            "sha256": "333110edbbffdb7575ea340cb341bcaf691862d6594a649db28097f7d8cb19b7",
+            "size": 2995
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-impl.js",
+            "sha256": "11645352ba5d08971344717d3339f86aac560f84f29229b2ebe07f1ec8aa8905",
+            "size": 16458
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-utils-impl.js",
+            "sha256": "e7b1db989d33d54bdd1807b080a0989ff0b10d5f7dd8c93b92bbf293103aa4d5",
+            "size": 2213
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-utils.js",
+            "sha256": "d3f577e90dc2257c72ac728e5e6355c34af0342d971158d9f22b69d22aa97b8d",
+            "size": 213
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor.js",
+            "sha256": "9097114de356750f36f28776fa6ccd08d13694f0f9aac9e7669c30b6c43153f7",
+            "size": 393
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/trace.js",
+            "sha256": "faecd0df94998d786e2085d56aa6003449f1ac3b35c350e0d2762498604e5d72",
+            "size": 2496
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/type-helper.js",
+            "sha256": "7f786da8d2a611ad751c70a74edf4d9acfccd26be8e5c6b1cb730f982892bf32",
+            "size": 212
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/version.js",
+            "sha256": "0a1a7f532f4455ead0678966815c3114730150aa4368ebb5ebd9727425e9003b",
+            "size": 361
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/bin/napi-v6/linux/arm64/libonnxruntime.so.1",
+            "sha256": "1f549d46250b005580b597f4164984aaf75b3bcb9f3aeb07c7f8a8fe60b23c76",
+            "size": 25135496
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/bin/napi-v6/linux/arm64/onnxruntime_binding.node",
+            "sha256": "afec78dc11d38dc81605b068cefe1fc73ffe77ca240c15468aa40786150beac8",
+            "size": 394648
+          }
+        ]
+      },
+      "linux-x64": {
+        "host": "native/host.cjs",
+        "files": [
+          {
+            "path": "native/host.cjs",
+            "sha256": "1dbff328cbde889a0a88522589a76036ed5969eea7e6825d5d355abe692bf3de",
+            "size": 5600
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/package.json",
+            "sha256": "0871cd56ac2b9c9dfc834c7eabba819e5d4f966f005388515abb3402b14e0874",
+            "size": 1593
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/backend.js",
+            "sha256": "a79e8019e7276a282987023f9d38d41063a99e563e5e1a6f38a73a7d39ea83ab",
+            "size": 6289
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/binding.js",
+            "sha256": "2a85ac5de943c7222aae5ca2897f52d73891f528d4295b701fab077470c668c0",
+            "size": 1590
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/index.js",
+            "sha256": "019eb02133b94b1f7fdf2d89eb93b590ce1288d271f7b280647fb3978e6391fa",
+            "size": 1602
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/version.js",
+            "sha256": "0a1a7f532f4455ead0678966815c3114730150aa4368ebb5ebd9727425e9003b",
+            "size": 361
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/package.json",
+            "sha256": "4266741a80346e25820ccc494fbffb95e2f652b6dfb5585025be44df3b0d6722",
+            "size": 977
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/backend-impl.js",
+            "sha256": "3d25321895995f7e9480570b9a88f121049adf152e1829d0ecb11218da02d487",
+            "size": 5608
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/backend.js",
+            "sha256": "325aaee7a2649ea27629666f3ca01c0d80b9751e704ce502e43a8352390749b4",
+            "size": 433
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/env-impl.js",
+            "sha256": "35cd8cac33973538eab471b68622c86c35a6896f4307d1a74c9ca0eda7abbac6",
+            "size": 969
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/env.js",
+            "sha256": "22c7647f8ca1c1b83b437a92b95fee1457fcb72866fa029616b8f146dc609be8",
+            "size": 366
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/index.js",
+            "sha256": "d7dd6cc9790e87299099fcd1b0ccb4969c01591d7eec0383a1c64dbea133dd1a",
+            "size": 1955
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/inference-session-impl.js",
+            "sha256": "88d90723a169297855ad3b564b134c6b685b2661316c81f71fc80da1e203bae0",
+            "size": 8996
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/inference-session.js",
+            "sha256": "458be26f316c5068d32a56ddbc30ca0aa687c636e079b3d161a69f0f14a683f1",
+            "size": 467
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/onnx-model.js",
+            "sha256": "667f5fdac4b6df25e17f8a864d4dc619507f541f9fa0aafb6d3572fcca1e25e5",
+            "size": 211
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/onnx-value.js",
+            "sha256": "8446854766f4955ce438a7338216f49223767ecc508bb502b73a3dc1a1f1998e",
+            "size": 211
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/package.json",
+            "sha256": "091a04fa67c7907b98e106fcff8b964e13129754fce72d24f3025b97c4887fa3",
+            "size": 20
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-conversion-impl.js",
+            "sha256": "9815e72c0bb91896035de93b3113a2256a1a998bc53c7b5e6bf5fb4e93714766",
+            "size": 8067
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-conversion.js",
+            "sha256": "28cc462d4a9ea556ecc86c0e6d16a51d61b58d5bc5b4b7b48976b14bc8035bdc",
+            "size": 218
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-factory-impl.js",
+            "sha256": "a3204838a2c14416e4e61c968dc17c663ab3c9b8b2c4a8b7f2a1c5b06e3e5173",
+            "size": 11656
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-factory.js",
+            "sha256": "13b8d735350b828a49bda8aeec50b1dac888cf42268006efc4312f50a88b6906",
+            "size": 215
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-impl-type-mapping.js",
+            "sha256": "333110edbbffdb7575ea340cb341bcaf691862d6594a649db28097f7d8cb19b7",
+            "size": 2995
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-impl.js",
+            "sha256": "11645352ba5d08971344717d3339f86aac560f84f29229b2ebe07f1ec8aa8905",
+            "size": 16458
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-utils-impl.js",
+            "sha256": "e7b1db989d33d54bdd1807b080a0989ff0b10d5f7dd8c93b92bbf293103aa4d5",
+            "size": 2213
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-utils.js",
+            "sha256": "d3f577e90dc2257c72ac728e5e6355c34af0342d971158d9f22b69d22aa97b8d",
+            "size": 213
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor.js",
+            "sha256": "9097114de356750f36f28776fa6ccd08d13694f0f9aac9e7669c30b6c43153f7",
+            "size": 393
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/trace.js",
+            "sha256": "faecd0df94998d786e2085d56aa6003449f1ac3b35c350e0d2762498604e5d72",
+            "size": 2496
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/type-helper.js",
+            "sha256": "7f786da8d2a611ad751c70a74edf4d9acfccd26be8e5c6b1cb730f982892bf32",
+            "size": 212
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/version.js",
+            "sha256": "0a1a7f532f4455ead0678966815c3114730150aa4368ebb5ebd9727425e9003b",
+            "size": 361
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/bin/napi-v6/linux/x64/libonnxruntime.so.1",
+            "sha256": "ffb75a925ba05e47b235bb66e3e3911714a80b328a9c9425539feb204aa32a23",
+            "size": 45828512
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/bin/napi-v6/linux/x64/onnxruntime_binding.node",
+            "sha256": "ccdc60b981d93a490cf9513d3f583547252b6e285b72988a96a494f2f006c7b8",
+            "size": 389488
+          }
+        ]
+      },
+      "win32-arm64": {
+        "host": "native/host.cjs",
+        "files": [
+          {
+            "path": "native/host.cjs",
+            "sha256": "1dbff328cbde889a0a88522589a76036ed5969eea7e6825d5d355abe692bf3de",
+            "size": 5600
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/package.json",
+            "sha256": "0871cd56ac2b9c9dfc834c7eabba819e5d4f966f005388515abb3402b14e0874",
+            "size": 1593
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/backend.js",
+            "sha256": "a79e8019e7276a282987023f9d38d41063a99e563e5e1a6f38a73a7d39ea83ab",
+            "size": 6289
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/binding.js",
+            "sha256": "2a85ac5de943c7222aae5ca2897f52d73891f528d4295b701fab077470c668c0",
+            "size": 1590
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/index.js",
+            "sha256": "019eb02133b94b1f7fdf2d89eb93b590ce1288d271f7b280647fb3978e6391fa",
+            "size": 1602
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/version.js",
+            "sha256": "0a1a7f532f4455ead0678966815c3114730150aa4368ebb5ebd9727425e9003b",
+            "size": 361
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/package.json",
+            "sha256": "4266741a80346e25820ccc494fbffb95e2f652b6dfb5585025be44df3b0d6722",
+            "size": 977
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/backend-impl.js",
+            "sha256": "3d25321895995f7e9480570b9a88f121049adf152e1829d0ecb11218da02d487",
+            "size": 5608
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/backend.js",
+            "sha256": "325aaee7a2649ea27629666f3ca01c0d80b9751e704ce502e43a8352390749b4",
+            "size": 433
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/env-impl.js",
+            "sha256": "35cd8cac33973538eab471b68622c86c35a6896f4307d1a74c9ca0eda7abbac6",
+            "size": 969
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/env.js",
+            "sha256": "22c7647f8ca1c1b83b437a92b95fee1457fcb72866fa029616b8f146dc609be8",
+            "size": 366
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/index.js",
+            "sha256": "d7dd6cc9790e87299099fcd1b0ccb4969c01591d7eec0383a1c64dbea133dd1a",
+            "size": 1955
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/inference-session-impl.js",
+            "sha256": "88d90723a169297855ad3b564b134c6b685b2661316c81f71fc80da1e203bae0",
+            "size": 8996
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/inference-session.js",
+            "sha256": "458be26f316c5068d32a56ddbc30ca0aa687c636e079b3d161a69f0f14a683f1",
+            "size": 467
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/onnx-model.js",
+            "sha256": "667f5fdac4b6df25e17f8a864d4dc619507f541f9fa0aafb6d3572fcca1e25e5",
+            "size": 211
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/onnx-value.js",
+            "sha256": "8446854766f4955ce438a7338216f49223767ecc508bb502b73a3dc1a1f1998e",
+            "size": 211
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/package.json",
+            "sha256": "091a04fa67c7907b98e106fcff8b964e13129754fce72d24f3025b97c4887fa3",
+            "size": 20
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-conversion-impl.js",
+            "sha256": "9815e72c0bb91896035de93b3113a2256a1a998bc53c7b5e6bf5fb4e93714766",
+            "size": 8067
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-conversion.js",
+            "sha256": "28cc462d4a9ea556ecc86c0e6d16a51d61b58d5bc5b4b7b48976b14bc8035bdc",
+            "size": 218
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-factory-impl.js",
+            "sha256": "a3204838a2c14416e4e61c968dc17c663ab3c9b8b2c4a8b7f2a1c5b06e3e5173",
+            "size": 11656
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-factory.js",
+            "sha256": "13b8d735350b828a49bda8aeec50b1dac888cf42268006efc4312f50a88b6906",
+            "size": 215
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-impl-type-mapping.js",
+            "sha256": "333110edbbffdb7575ea340cb341bcaf691862d6594a649db28097f7d8cb19b7",
+            "size": 2995
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-impl.js",
+            "sha256": "11645352ba5d08971344717d3339f86aac560f84f29229b2ebe07f1ec8aa8905",
+            "size": 16458
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-utils-impl.js",
+            "sha256": "e7b1db989d33d54bdd1807b080a0989ff0b10d5f7dd8c93b92bbf293103aa4d5",
+            "size": 2213
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-utils.js",
+            "sha256": "d3f577e90dc2257c72ac728e5e6355c34af0342d971158d9f22b69d22aa97b8d",
+            "size": 213
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor.js",
+            "sha256": "9097114de356750f36f28776fa6ccd08d13694f0f9aac9e7669c30b6c43153f7",
+            "size": 393
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/trace.js",
+            "sha256": "faecd0df94998d786e2085d56aa6003449f1ac3b35c350e0d2762498604e5d72",
+            "size": 2496
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/type-helper.js",
+            "sha256": "7f786da8d2a611ad751c70a74edf4d9acfccd26be8e5c6b1cb730f982892bf32",
+            "size": 212
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/version.js",
+            "sha256": "0a1a7f532f4455ead0678966815c3114730150aa4368ebb5ebd9727425e9003b",
+            "size": 361
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/bin/napi-v6/win32/arm64/onnxruntime.dll",
+            "sha256": "6c3a2abf5c6aca11c48a0d338a91af309f2266f25ce2e4084e6a87bbcb0fbfd0",
+            "size": 29815136
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/bin/napi-v6/win32/arm64/onnxruntime_binding.node",
+            "sha256": "d8179924f15c2d3c1c8a75c50adf1671ec28c7f1cb0da9fc28b17daa02c5ecf5",
+            "size": 422200
+          }
+        ]
+      },
+      "win32-x64": {
+        "host": "native/host.cjs",
+        "files": [
+          {
+            "path": "native/host.cjs",
+            "sha256": "1dbff328cbde889a0a88522589a76036ed5969eea7e6825d5d355abe692bf3de",
+            "size": 5600
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/package.json",
+            "sha256": "0871cd56ac2b9c9dfc834c7eabba819e5d4f966f005388515abb3402b14e0874",
+            "size": 1593
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/backend.js",
+            "sha256": "a79e8019e7276a282987023f9d38d41063a99e563e5e1a6f38a73a7d39ea83ab",
+            "size": 6289
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/binding.js",
+            "sha256": "2a85ac5de943c7222aae5ca2897f52d73891f528d4295b701fab077470c668c0",
+            "size": 1590
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/index.js",
+            "sha256": "019eb02133b94b1f7fdf2d89eb93b590ce1288d271f7b280647fb3978e6391fa",
+            "size": 1602
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/dist/version.js",
+            "sha256": "0a1a7f532f4455ead0678966815c3114730150aa4368ebb5ebd9727425e9003b",
+            "size": 361
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/package.json",
+            "sha256": "4266741a80346e25820ccc494fbffb95e2f652b6dfb5585025be44df3b0d6722",
+            "size": 977
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/backend-impl.js",
+            "sha256": "3d25321895995f7e9480570b9a88f121049adf152e1829d0ecb11218da02d487",
+            "size": 5608
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/backend.js",
+            "sha256": "325aaee7a2649ea27629666f3ca01c0d80b9751e704ce502e43a8352390749b4",
+            "size": 433
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/env-impl.js",
+            "sha256": "35cd8cac33973538eab471b68622c86c35a6896f4307d1a74c9ca0eda7abbac6",
+            "size": 969
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/env.js",
+            "sha256": "22c7647f8ca1c1b83b437a92b95fee1457fcb72866fa029616b8f146dc609be8",
+            "size": 366
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/index.js",
+            "sha256": "d7dd6cc9790e87299099fcd1b0ccb4969c01591d7eec0383a1c64dbea133dd1a",
+            "size": 1955
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/inference-session-impl.js",
+            "sha256": "88d90723a169297855ad3b564b134c6b685b2661316c81f71fc80da1e203bae0",
+            "size": 8996
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/inference-session.js",
+            "sha256": "458be26f316c5068d32a56ddbc30ca0aa687c636e079b3d161a69f0f14a683f1",
+            "size": 467
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/onnx-model.js",
+            "sha256": "667f5fdac4b6df25e17f8a864d4dc619507f541f9fa0aafb6d3572fcca1e25e5",
+            "size": 211
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/onnx-value.js",
+            "sha256": "8446854766f4955ce438a7338216f49223767ecc508bb502b73a3dc1a1f1998e",
+            "size": 211
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/package.json",
+            "sha256": "091a04fa67c7907b98e106fcff8b964e13129754fce72d24f3025b97c4887fa3",
+            "size": 20
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-conversion-impl.js",
+            "sha256": "9815e72c0bb91896035de93b3113a2256a1a998bc53c7b5e6bf5fb4e93714766",
+            "size": 8067
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-conversion.js",
+            "sha256": "28cc462d4a9ea556ecc86c0e6d16a51d61b58d5bc5b4b7b48976b14bc8035bdc",
+            "size": 218
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-factory-impl.js",
+            "sha256": "a3204838a2c14416e4e61c968dc17c663ab3c9b8b2c4a8b7f2a1c5b06e3e5173",
+            "size": 11656
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-factory.js",
+            "sha256": "13b8d735350b828a49bda8aeec50b1dac888cf42268006efc4312f50a88b6906",
+            "size": 215
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-impl-type-mapping.js",
+            "sha256": "333110edbbffdb7575ea340cb341bcaf691862d6594a649db28097f7d8cb19b7",
+            "size": 2995
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-impl.js",
+            "sha256": "11645352ba5d08971344717d3339f86aac560f84f29229b2ebe07f1ec8aa8905",
+            "size": 16458
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-utils-impl.js",
+            "sha256": "e7b1db989d33d54bdd1807b080a0989ff0b10d5f7dd8c93b92bbf293103aa4d5",
+            "size": 2213
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor-utils.js",
+            "sha256": "d3f577e90dc2257c72ac728e5e6355c34af0342d971158d9f22b69d22aa97b8d",
+            "size": 213
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/tensor.js",
+            "sha256": "9097114de356750f36f28776fa6ccd08d13694f0f9aac9e7669c30b6c43153f7",
+            "size": 393
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/trace.js",
+            "sha256": "faecd0df94998d786e2085d56aa6003449f1ac3b35c350e0d2762498604e5d72",
+            "size": 2496
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/type-helper.js",
+            "sha256": "7f786da8d2a611ad751c70a74edf4d9acfccd26be8e5c6b1cb730f982892bf32",
+            "size": 212
+          },
+          {
+            "path": "native/node_modules/onnxruntime-common/dist/cjs/version.js",
+            "sha256": "0a1a7f532f4455ead0678966815c3114730150aa4368ebb5ebd9727425e9003b",
+            "size": 361
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/bin/napi-v6/win32/x64/onnxruntime.dll",
+            "sha256": "508c362f5673483dd3a086379c392795b2e42d10d5e6f3f90ebd7ac21c97af67",
+            "size": 28754232
+          },
+          {
+            "path": "native/node_modules/onnxruntime-node/bin/napi-v6/win32/x64/onnxruntime_binding.node",
+            "sha256": "ddd428464069b84414d34ec1796c7c2a69c33a976e4b0390692629e394f92fa1",
+            "size": 298848
+          }
+        ]
+      },
+      "android-arm64": {
+        "host": "native/android-arm64/host.dex",
+        "entry": "zam.plugins.dpdfnet.Host",
+        "files": [
+          {
+            "path": "native/android-arm64/host.dex",
+            "sha256": "a026a367e1b1b2a6b847af2ca91f441acb64f49c581228c4ab1331b86f345d94",
+            "size": 140060
+          },
+          {
+            "path": "native/android-arm64/lib/libonnxruntime.so",
+            "sha256": "df5d25c72a868dca773597c71e2000756d43fe4d70ade516d3693c54e12e0ada",
+            "size": 32990480
+          },
+          {
+            "path": "native/android-arm64/lib/libonnxruntime4j_jni.so",
+            "sha256": "0695257178815f8c58c1719ba07d6d5d91a2b339634328cca2a0a98aa7ff2952",
+            "size": 111648
+          }
+        ]
+      },
+      "android-arm": {
+        "host": "native/android-arm/host.dex",
+        "entry": "zam.plugins.dpdfnet.Host",
+        "files": [
+          {
+            "path": "native/android-arm/host.dex",
+            "sha256": "a026a367e1b1b2a6b847af2ca91f441acb64f49c581228c4ab1331b86f345d94",
+            "size": 140060
+          },
+          {
+            "path": "native/android-arm/lib/libonnxruntime.so",
+            "sha256": "d8c6e57af1848c4b9b2571a8864ac53592e57105dc67fb1e7b9e49828e555279",
+            "size": 23311344
+          },
+          {
+            "path": "native/android-arm/lib/libonnxruntime4j_jni.so",
+            "sha256": "05c34d683a148da634af1997ee31aa4383307cf1daba0c890f15f2cfff2c3171",
+            "size": 81584
+          }
+        ]
+      },
+      "android-x64": {
+        "host": "native/android-x64/host.dex",
+        "entry": "zam.plugins.dpdfnet.Host",
+        "files": [
+          {
+            "path": "native/android-x64/host.dex",
+            "sha256": "a026a367e1b1b2a6b847af2ca91f441acb64f49c581228c4ab1331b86f345d94",
+            "size": 140060
+          },
+          {
+            "path": "native/android-x64/lib/libonnxruntime.so",
+            "sha256": "f59d4d59d4c71532028d56ab6ca1dae62c3838c7982adfdad7f2560048b89ed9",
+            "size": 39348488
+          },
+          {
+            "path": "native/android-x64/lib/libonnxruntime4j_jni.so",
+            "sha256": "fba30194109597cca36512e86c8f30d18951a0bdaa177ea680b562f9d8ea77a2",
+            "size": 100032
+          }
+        ]
+      },
+      "android-ia32": {
+        "host": "native/android-ia32/host.dex",
+        "entry": "zam.plugins.dpdfnet.Host",
+        "files": [
+          {
+            "path": "native/android-ia32/host.dex",
+            "sha256": "a026a367e1b1b2a6b847af2ca91f441acb64f49c581228c4ab1331b86f345d94",
+            "size": 140060
+          },
+          {
+            "path": "native/android-ia32/lib/libonnxruntime.so",
+            "sha256": "2c140256e58dd8b2a8b93020ee973f8c67500f945053da671239d7ae7425ef7f",
+            "size": 39266604
+          },
+          {
+            "path": "native/android-ia32/lib/libonnxruntime4j_jni.so",
+            "sha256": "21576db11fec50c1698bd6f14c9eaac894c5e1024ee3d162c15aa61a4885d501",
+            "size": 93620
+          }
+        ]
+      }
+    }
+  }
+}
