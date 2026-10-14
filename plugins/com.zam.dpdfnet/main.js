@@ -998,7 +998,8 @@ var ASSETS = {
   model: "assets/model.onnx",
   ortModule: "assets/ort.wasm.min.mjs",
   ortGlue: "assets/ort-wasm-simd-threaded.mjs",
-  ortWasm: "assets/ort-wasm-simd-threaded.wasm"
+  ortWasm: "assets/ort-wasm-simd-threaded.wasm",
+  selftest: "assets/selftest.bin"
 };
 var SLACK_GROWTH = 8;
 var SLACK_LIMIT = 40;
@@ -1007,23 +1008,26 @@ function slackFor(baseLatencyS) {
   const slack = Math.min(SLACK_LIMIT - SLACK_GROWTH, Math.max(2, burst + 1));
   return { slack, maxSlack: slack + SLACK_GROWTH };
 }
-var BENCH_MAX_MEDIAN_MS = 6;
-var BENCH_MAX_P90_MS = 9;
+var BENCH_MAX_FRAME_MS = 6;
+var BENCH_MAX_LATENCY_MS = 15;
+var BENCH_DEPTH = 2;
 var BENCH_WARMUP = 8;
 var BENCH_FRAMES = 32;
 var INIT_TIMEOUT_MS = 3e4;
 var VERDICT_TTL_MS = 14 * 24 * 3600 * 1e3;
 var STALLED_TTL_MS = 3600 * 1e3;
+var UNAVAILABLE_TTL_MS = 24 * 3600 * 1e3;
 var VERDICT_KEY = "verdict";
-function readVerdict(store, now = Date.now()) {
-  const v = store.get(VERDICT_KEY, null);
+var GPU_VERDICT_KEY = "verdict-webgpu";
+function readVerdict(store, now = Date.now(), key = VERDICT_KEY) {
+  const v = store.get(key, null);
   if (!v || typeof v.ok !== "boolean" || typeof v.at !== "number")
     return null;
-  const ttl = v.reason === "stalled" ? STALLED_TTL_MS : VERDICT_TTL_MS;
+  const ttl = v.reason === "stalled" ? STALLED_TTL_MS : v.reason === "unavailable" ? UNAVAILABLE_TTL_MS : VERDICT_TTL_MS;
   return now - v.at > ttl ? null : v;
 }
 function fastEnough(r) {
-  return r.medianMs <= BENCH_MAX_MEDIAN_MS && r.p90Ms <= BENCH_MAX_P90_MS;
+  return r.frameMs <= BENCH_MAX_FRAME_MS && r.p90Ms <= BENCH_MAX_LATENCY_MS;
 }
 var TooSlowError = class extends Error {
 };
@@ -1071,34 +1075,60 @@ function nextMessage(port, pick, timeoutMs) {
     };
   });
 }
-async function benchmark(port) {
+function benchmark(port) {
   let seed = 7;
   const rand = () => (seed = seed * 1103515245 + 12345 & 2147483647) / 2147483647 * 2 - 1;
   const spec = new Float32Array(DPDF_BINS * 2);
+  const total = BENCH_WARMUP + BENCH_FRAMES;
+  const sentAt = /* @__PURE__ */ new Map();
   const times = [];
-  for (let i = 0; i < BENCH_WARMUP + BENCH_FRAMES; i++) {
-    for (let k = 0; k < spec.length; k++) spec[k] = rand() * 0.5;
-    const answer = nextMessage(
-      port,
-      (d) => {
-        const f = decodeFrame(d);
-        if (f?.seq === i) return f;
-        const r = parseReply(d);
-        if (r?.type === "error") throw new Error(r.message);
-        return null;
-      },
-      2e3
-    );
-    const t0 = performance.now();
-    port.postMessage(encodeFrame(i, spec));
-    await answer;
-    if (i >= BENCH_WARMUP) times.push(performance.now() - t0);
-  }
-  times.sort((a, b) => a - b);
-  return {
-    medianMs: times[Math.floor(times.length / 2)],
-    p90Ms: times[Math.floor(times.length * 0.9)]
-  };
+  let next = 0;
+  let answered = 0;
+  let timedFrom = 0;
+  return new Promise((resolve, reject) => {
+    let timer;
+    const finish = (err, r) => {
+      clearTimeout(timer);
+      port.onmessage = null;
+      if (err) reject(err);
+      else resolve(r);
+    };
+    const arm = () => {
+      clearTimeout(timer);
+      timer = setTimeout(
+        () => finish(new Error("DPDFNet backend timed out")),
+        2e3
+      );
+    };
+    const send = () => {
+      for (let k = 0; k < spec.length; k++) spec[k] = rand() * 0.5;
+      sentAt.set(next, performance.now());
+      port.postMessage(encodeFrame(next++, spec));
+    };
+    port.onmessage = (e) => {
+      const r = parseReply(e.data);
+      if (r?.type === "error") return finish(new Error(r.message));
+      const f = decodeFrame(e.data);
+      const t0 = f ? sentAt.get(f.seq) : void 0;
+      if (!f || t0 === void 0) return;
+      sentAt.delete(f.seq);
+      const now = performance.now();
+      if (f.seq >= BENCH_WARMUP) times.push(now - t0);
+      else if (f.seq === BENCH_WARMUP - 1) timedFrom = now;
+      if (++answered === total) {
+        times.sort((a, b) => a - b);
+        return finish(null, {
+          medianMs: times[Math.floor(times.length / 2)],
+          p90Ms: times[Math.floor(times.length * 0.9)],
+          frameMs: (now - timedFrom) / BENCH_FRAMES
+        });
+      }
+      arm();
+      if (next < total) send();
+    };
+    arm();
+    for (let i = 0; i < BENCH_DEPTH; i++) send();
+  });
 }
 function closePort(port) {
   try {
@@ -1107,20 +1137,23 @@ function closePort(port) {
   }
   port.close();
 }
+var webgpuPossible = () => typeof navigator !== "undefined" && "gpu" in navigator;
 function dpdfnetSupported() {
   return typeof AudioWorkletNode !== "undefined" && typeof WebAssembly !== "undefined" && typeof Worker !== "undefined" && typeof MessageChannel !== "undefined";
 }
 function createDpdfnet(zam) {
-  const writeVerdict = (v) => zam.storage.set(VERDICT_KEY, v);
-  const knownTooSlow = () => readVerdict(zam.storage)?.ok === false;
+  const writeVerdict = (v) => zam.storage.set(
+    v.backend === "webgpu" ? GPU_VERDICT_KEY : VERDICT_KEY,
+    v
+  );
+  const cpuRuledOut = () => readVerdict(zam.storage)?.ok === false;
+  const gpuRuledOut = () => !webgpuPossible() || readVerdict(zam.storage, Date.now(), GPU_VERDICT_KEY)?.ok === false;
+  const knownTooSlow = () => cpuRuledOut() && gpuRuledOut();
   let worker = null;
   async function ensureWorker() {
     if (worker) return worker;
-    const [workerUrl, ortModuleUrl, ortGlueUrl, ortWasm, model] = await Promise.all([
+    const [workerUrl, model] = await Promise.all([
       zam.assets.url(ASSETS.worker, "text/javascript"),
-      zam.assets.url(ASSETS.ortModule, "text/javascript"),
-      zam.assets.url(ASSETS.ortGlue, "text/javascript"),
-      zam.assets.get(ASSETS.ortWasm),
       zam.assets.get(ASSETS.model)
     ]);
     if (worker) return worker;
@@ -1128,30 +1161,81 @@ function createDpdfnet(zam) {
       type: "module",
       name: "zam-dpdfnet"
     });
-    const loaded = new Promise((resolve, reject) => {
-      w.addEventListener("message", (e) => {
-        if (e.data?.type === "loaded") resolve();
-        else if (e.data?.type === "load-error")
-          reject(new Error(e.data.message));
-      });
-      w.addEventListener(
-        "error",
-        (e) => reject(
-          new Error(e.message || "the DPDFNet Worker didn't start")
-        )
-      );
-    });
-    w.postMessage(
-      { type: "load", ortModuleUrl, ortGlueUrl, ortWasm, model },
-      [ortWasm, model]
-    );
-    const entry = { w, loaded };
+    w.postMessage({ type: "model", model }, [
+      model
+    ]);
+    const entry = { w, engines: /* @__PURE__ */ new Map() };
     worker = entry;
-    loaded.catch(() => {
+    w.addEventListener("error", (e) => {
+      console.warn("DPDFNet Worker:", e.message);
       if (worker === entry) worker = null;
       w.terminate();
     });
     return entry;
+  }
+  function ensureEngine(wk, engine) {
+    const started = wk.engines.get(engine);
+    if (started) return started;
+    const p = new Promise((resolve, reject) => {
+      const done = () => {
+        wk.w.removeEventListener("message", onMessage);
+        wk.w.removeEventListener("error", onError);
+      };
+      const onMessage = (e) => {
+        const d = e.data;
+        if (d?.engine !== engine) return;
+        if (d.type === "engine-ready") resolve(d.detail);
+        else if (d.type === "engine-error")
+          reject(new Error(d.message));
+        else return;
+        done();
+      };
+      const onError = (e) => {
+        done();
+        reject(
+          new Error(e.message || "the DPDFNet Worker didn't start")
+        );
+      };
+      wk.w.addEventListener("message", onMessage);
+      wk.w.addEventListener("error", onError);
+      (async () => {
+        if (engine === "webgpu") {
+          const selftest = await zam.assets.get(ASSETS.selftest);
+          wk.w.postMessage(
+            {
+              type: "engine",
+              engine,
+              selftest
+            },
+            [selftest]
+          );
+        } else {
+          const [ortModuleUrl, ortGlueUrl, ortWasm] = await Promise.all([
+            zam.assets.url(ASSETS.ortModule, "text/javascript"),
+            zam.assets.url(ASSETS.ortGlue, "text/javascript"),
+            zam.assets.get(ASSETS.ortWasm)
+          ]);
+          wk.w.postMessage(
+            {
+              type: "engine",
+              engine,
+              ortModuleUrl,
+              ortGlueUrl,
+              ortWasm
+            },
+            [ortWasm]
+          );
+        }
+      })().catch((err) => {
+        done();
+        reject(err);
+      });
+    });
+    wk.engines.set(engine, p);
+    p.catch(() => {
+      if (wk.engines.get(engine) === p) wk.engines.delete(engine);
+    });
+    return p;
   }
   async function open(kind) {
     if (kind === "native") {
@@ -1162,26 +1246,41 @@ function createDpdfnet(zam) {
       return { b: { kind, port, close: () => closePort(port) }, model };
     }
     const wk = await ensureWorker();
-    await wk.loaded;
+    const engine = kind === "webgpu" ? "webgpu" : "wasm";
+    const gpu = await ensureEngine(wk, engine);
+    if (gpu) console.info(`DPDFNet on WebGPU: ${gpu}`);
     const ch = new MessageChannel();
-    wk.w.postMessage({ type: "connect" }, [ch.port2]);
+    wk.w.postMessage({ type: "connect", engine }, [
+      ch.port2
+    ]);
     return {
       b: { kind, port: ch.port1, close: () => closePort(ch.port1) }
     };
   }
   async function initBackend(b, model) {
     const ready = nextMessage(b.port, parseReply, INIT_TIMEOUT_MS);
-    const cores = navigator.hardwareConcurrency || 2;
-    b.port.postMessage(initMessage(cores >= 4 ? 2 : 1, model?.byteLength));
+    b.port.postMessage(initMessage(1, model?.byteLength));
     if (model) b.port.postMessage(model);
     const reply = await ready;
     if (reply.type === "error") throw new Error(reply.message);
   }
   async function startBackend() {
     const order = [];
-    if (zam.native.available()) order.push("native");
-    order.push("worker");
-    let lastErr = new Error("no DPDFNet backend available");
+    if (!gpuRuledOut()) order.push("webgpu");
+    if (!cpuRuledOut()) {
+      if (zam.native.available()) order.push("native");
+      order.push("worker");
+    }
+    let lastErr = new TooSlowError(
+      "DPDFNet was too slow on this device"
+    );
+    const gpuFailed = (reason) => writeVerdict({
+      ok: false,
+      backend: "webgpu",
+      medianMs: null,
+      reason,
+      at: Date.now()
+    });
     for (const kind of order) {
       let b = null;
       try {
@@ -1192,12 +1291,23 @@ function createDpdfnet(zam) {
         console.warn(`DPDFNet ${kind} backend unavailable:`, err);
         b?.close();
         lastErr = err;
+        if (kind === "webgpu")
+          gpuFailed(
+            String(err).includes("self-test") ? "selftest" : "unavailable"
+          );
         continue;
       }
-      const r = await benchmark(b.port).catch((err) => {
+      let r;
+      try {
+        r = await benchmark(b.port);
+      } catch (err) {
         b.close();
-        throw err;
-      });
+        if (kind !== "webgpu") throw err;
+        console.warn("DPDFNet webgpu backend failed:", err);
+        gpuFailed("stalled");
+        lastErr = err;
+        continue;
+      }
       const ok = fastEnough(r);
       writeVerdict({
         ok,
@@ -1208,9 +1318,11 @@ function createDpdfnet(zam) {
       });
       if (!ok) {
         b.close();
-        throw new TooSlowError(
-          `DPDFNet too slow here (${kind}: median ${r.medianMs.toFixed(1)} ms, p90 ${r.p90Ms.toFixed(1)} ms)`
-        );
+        const msg = `DPDFNet too slow here (${kind}: a frame per ${r.frameMs.toFixed(1)} ms, round trip p90 ${r.p90Ms.toFixed(1)} ms)`;
+        if (kind !== "webgpu") throw new TooSlowError(msg);
+        console.info(msg);
+        lastErr = new TooSlowError(msg);
+        continue;
       }
       b.port.postMessage(control({ type: "reset" }));
       return b;

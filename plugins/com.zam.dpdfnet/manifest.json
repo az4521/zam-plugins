@@ -1,7 +1,7 @@
 {
   "id": "com.zam.dpdfnet",
   "name": "DPDFNet noise filter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Clearer AI noise removal for your microphone in calls (Ceva's DPDFNet-2). Runs on your device; heavier than the built-in DeepFilterNet3, which stands in on devices too slow for it.",
   "author": "az4521",
   "entry": "main.js",
@@ -19,8 +19,8 @@
     },
     {
       "path": "assets/worker.js",
-      "sha256": "6aa5f7a569c1857839011cfd99ca8e5ce926d1ec3f2284eb754c3d2b01d3cf6a",
-      "size": 14482
+      "sha256": "937926feed63323210f7a83fded63b91b5c2dda16f2d367624ad926bd7d11add",
+      "size": 66944
     },
     {
       "path": "assets/model.onnx",
@@ -41,6 +41,11 @@
       "path": "assets/ort-wasm-simd-threaded.wasm",
       "sha256": "3398c10d07d229bd91b364548e130e0e51a8e5704b88c7c083ebbeb78842dee2",
       "size": 14239897
+    },
+    {
+      "path": "assets/selftest.bin",
+      "sha256": "f1448eb0e097a47dceb461cc32a13a5cb65cd0dd8fe0cf47c6efe6a2f87f7996",
+      "size": 30784
     }
   ],
   "native": {
@@ -50,8 +55,8 @@
         "files": [
           {
             "path": "native/host.cjs",
-            "sha256": "1dbff328cbde889a0a88522589a76036ed5969eea7e6825d5d355abe692bf3de",
-            "size": 5600
+            "sha256": "583cc8de2d4b0d452e05938509238505c176b660418849babc3aab94664f2c4b",
+            "size": 5982
           },
           {
             "path": "native/node_modules/onnxruntime-node/package.json",
@@ -210,8 +215,8 @@
         "files": [
           {
             "path": "native/host.cjs",
-            "sha256": "1dbff328cbde889a0a88522589a76036ed5969eea7e6825d5d355abe692bf3de",
-            "size": 5600
+            "sha256": "583cc8de2d4b0d452e05938509238505c176b660418849babc3aab94664f2c4b",
+            "size": 5982
           },
           {
             "path": "native/node_modules/onnxruntime-node/package.json",
@@ -370,8 +375,8 @@
         "files": [
           {
             "path": "native/host.cjs",
-            "sha256": "1dbff328cbde889a0a88522589a76036ed5969eea7e6825d5d355abe692bf3de",
-            "size": 5600
+            "sha256": "583cc8de2d4b0d452e05938509238505c176b660418849babc3aab94664f2c4b",
+            "size": 5982
           },
           {
             "path": "native/node_modules/onnxruntime-node/package.json",
@@ -530,8 +535,8 @@
         "files": [
           {
             "path": "native/host.cjs",
-            "sha256": "1dbff328cbde889a0a88522589a76036ed5969eea7e6825d5d355abe692bf3de",
-            "size": 5600
+            "sha256": "583cc8de2d4b0d452e05938509238505c176b660418849babc3aab94664f2c4b",
+            "size": 5982
           },
           {
             "path": "native/node_modules/onnxruntime-node/package.json",
@@ -690,8 +695,8 @@
         "files": [
           {
             "path": "native/host.cjs",
-            "sha256": "1dbff328cbde889a0a88522589a76036ed5969eea7e6825d5d355abe692bf3de",
-            "size": 5600
+            "sha256": "583cc8de2d4b0d452e05938509238505c176b660418849babc3aab94664f2c4b",
+            "size": 5982
           },
           {
             "path": "native/node_modules/onnxruntime-node/package.json",
@@ -851,8 +856,8 @@
         "files": [
           {
             "path": "native/android-arm64/host.dex",
-            "sha256": "a026a367e1b1b2a6b847af2ca91f441acb64f49c581228c4ab1331b86f345d94",
-            "size": 140060
+            "sha256": "111bb0e31f8cb736bc0ba87d2f59d6ab583cd884d96cdc8011a52aff59cd654d",
+            "size": 140172
           },
           {
             "path": "native/android-arm64/lib/libonnxruntime.so",
@@ -872,8 +877,8 @@
         "files": [
           {
             "path": "native/android-arm/host.dex",
-            "sha256": "a026a367e1b1b2a6b847af2ca91f441acb64f49c581228c4ab1331b86f345d94",
-            "size": 140060
+            "sha256": "111bb0e31f8cb736bc0ba87d2f59d6ab583cd884d96cdc8011a52aff59cd654d",
+            "size": 140172
           },
           {
             "path": "native/android-arm/lib/libonnxruntime.so",
@@ -893,8 +898,8 @@
         "files": [
           {
             "path": "native/android-x64/host.dex",
-            "sha256": "a026a367e1b1b2a6b847af2ca91f441acb64f49c581228c4ab1331b86f345d94",
-            "size": 140060
+            "sha256": "111bb0e31f8cb736bc0ba87d2f59d6ab583cd884d96cdc8011a52aff59cd654d",
+            "size": 140172
           },
           {
             "path": "native/android-x64/lib/libonnxruntime.so",
@@ -914,8 +919,8 @@
         "files": [
           {
             "path": "native/android-ia32/host.dex",
-            "sha256": "a026a367e1b1b2a6b847af2ca91f441acb64f49c581228c4ab1331b86f345d94",
-            "size": 140060
+            "sha256": "111bb0e31f8cb736bc0ba87d2f59d6ab583cd884d96cdc8011a52aff59cd654d",
+            "size": 140172
           },
           {
             "path": "native/android-ia32/lib/libonnxruntime.so",
