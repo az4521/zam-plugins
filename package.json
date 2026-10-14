@@ -1,0 +1,26 @@
+{
+    "name": "zam-plugins",
+    "private": true,
+    "type": "module",
+    "description": "Zam's official plugins: the published plugins (index.json, plugins/) and the source of those built here (src/).",
+    "license": "GPL-3.0-only",
+    "scripts": {
+        "build:dpdfnet": "node src/dpdfnet/build.mjs",
+        "check": "tsc -p src/dpdfnet/tsconfig.json",
+        "test": "vitest run",
+        "format": "prettier --write src scripts",
+        "sync-api": "node scripts/sync-zam-api.mjs"
+    },
+    "devDependencies": {
+        "@webgpu/types": "0.1.74",
+        "adm-zip": "0.6.1",
+        "esbuild": "0.25.12",
+        "onnxruntime-common": "1.30.0",
+        "onnxruntime-node": "1.30.0",
+        "onnxruntime-web": "1.30.0",
+        "prettier": "3.9.9",
+        "typescript": "5.9.3",
+        "vite": "6.4.3",
+        "vitest": "4.1.11"
+    }
+}
