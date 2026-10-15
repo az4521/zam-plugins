@@ -48,7 +48,7 @@ const minAppVersion = argMin > 0 ? process.argv[argMin + 1] : MIN_APP_VERSION;
 const PLUGIN = {
     id: PLUGIN_ID,
     name: "DPDFNet noise filter",
-    version: "1.1.0",
+    version: "1.2.0",
     description:
         "Clearer AI noise removal for your microphone in calls (Ceva's DPDFNet-2). Runs on your device; heavier than the built-in DeepFilterNet3, which stands in on devices too slow for it.",
     author: "az4521",

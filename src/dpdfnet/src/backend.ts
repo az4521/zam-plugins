@@ -27,6 +27,7 @@
  */
 import type {
     MicFilterInstance,
+    MicFilterOptions,
     ZamPluginApi,
 } from "../../../zam-api/plugins/types";
 import { DPDF_BINS, decodeFrame, encodeFrame } from "./worklet.js";
@@ -40,8 +41,8 @@ import {
 } from "./protocol";
 
 export const DPDFNET_SAMPLE_RATE = 48000;
-/** Same cap as Zam's DeepFilterNet3: the pause gate and leveller after it
- *  are tuned around it. */
+/** Default cap, the same as Zam's DeepFilterNet3; Zam's Debug settings can
+ *  change it (MicFilterOptions.attenuationDb). */
 export const DPDFNET_ATTENUATION_DB = 25;
 
 /** The plugin's files (manifest `assets`). */
@@ -537,7 +538,10 @@ export function createDpdfnet(zam: ZamPluginApi) {
 
     const workletLoaded = new WeakMap<BaseAudioContext, Promise<void>>();
 
-    async function create(ctx: AudioContext): Promise<MicFilterInstance> {
+    async function create(
+        ctx: AudioContext,
+        opts?: MicFilterOptions,
+    ): Promise<MicFilterInstance> {
         if (!dpdfnetSupported()) throw new Error("DPDFNet can't run here");
         if (ctx.sampleRate !== DPDFNET_SAMPLE_RATE)
             throw new Error(`DPDFNet needs 48 kHz, got ${ctx.sampleRate}`);
@@ -560,7 +564,7 @@ export function createDpdfnet(zam: ZamPluginApi) {
             channelCount: 1,
             channelCountMode: "explicit",
             processorOptions: {
-                attenuationDb: DPDFNET_ATTENUATION_DB,
+                attenuationDb: opts?.attenuationDb ?? DPDFNET_ATTENUATION_DB,
                 slack,
                 maxSlack,
             },

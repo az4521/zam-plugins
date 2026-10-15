@@ -1,7 +1,7 @@
 {
   "id": "com.zam.dpdfnet",
   "name": "DPDFNet noise filter",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Clearer AI noise removal for your microphone in calls (Ceva's DPDFNet-2). Runs on your device; heavier than the built-in DeepFilterNet3, which stands in on devices too slow for it.",
   "author": "az4521",
   "entry": "main.js",
@@ -19,8 +19,8 @@
     },
     {
       "path": "assets/worker.js",
-      "sha256": "937926feed63323210f7a83fded63b91b5c2dda16f2d367624ad926bd7d11add",
-      "size": 66944
+      "sha256": "1a544ca51eb156e180b08c280842649c4450b969de84c3863481870db28ff7fd",
+      "size": 66916
     },
     {
       "path": "assets/model.onnx",
@@ -856,8 +856,8 @@
         "files": [
           {
             "path": "native/android-arm64/host.dex",
-            "sha256": "111bb0e31f8cb736bc0ba87d2f59d6ab583cd884d96cdc8011a52aff59cd654d",
-            "size": 140172
+            "sha256": "4caef400f09e8eacc4c3d8efd052a48b8a60dc16094ccc7b784c3b5a72514b00",
+            "size": 140080
           },
           {
             "path": "native/android-arm64/lib/libonnxruntime.so",
@@ -877,8 +877,8 @@
         "files": [
           {
             "path": "native/android-arm/host.dex",
-            "sha256": "111bb0e31f8cb736bc0ba87d2f59d6ab583cd884d96cdc8011a52aff59cd654d",
-            "size": 140172
+            "sha256": "4caef400f09e8eacc4c3d8efd052a48b8a60dc16094ccc7b784c3b5a72514b00",
+            "size": 140080
           },
           {
             "path": "native/android-arm/lib/libonnxruntime.so",
@@ -898,8 +898,8 @@
         "files": [
           {
             "path": "native/android-x64/host.dex",
-            "sha256": "111bb0e31f8cb736bc0ba87d2f59d6ab583cd884d96cdc8011a52aff59cd654d",
-            "size": 140172
+            "sha256": "4caef400f09e8eacc4c3d8efd052a48b8a60dc16094ccc7b784c3b5a72514b00",
+            "size": 140080
           },
           {
             "path": "native/android-x64/lib/libonnxruntime.so",
@@ -919,8 +919,8 @@
         "files": [
           {
             "path": "native/android-ia32/host.dex",
-            "sha256": "111bb0e31f8cb736bc0ba87d2f59d6ab583cd884d96cdc8011a52aff59cd654d",
-            "size": 140172
+            "sha256": "4caef400f09e8eacc4c3d8efd052a48b8a60dc16094ccc7b784c3b5a72514b00",
+            "size": 140080
           },
           {
             "path": "native/android-ia32/lib/libonnxruntime.so",

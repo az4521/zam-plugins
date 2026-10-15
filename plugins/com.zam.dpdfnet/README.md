@@ -30,11 +30,12 @@ ONNX Runtime 32%, ONNX Runtime Web 38%.
     plugins/com.zam.dpdfnet/native/       desktop host + native ONNX Runtime per platform;
                                   android-<abi>/: Java host (.dex) + .so files
 
-Built from the Zam repo with `node plugins/dpdfnet/build.mjs` (needs a JDK
-and ANDROID_HOME for the Android host, JDK 11 or newer; it fetches ONNX Runtime's Android
-package from Maven Central and checks its SHA-1). Zam checks
-every file against the manifest's SHA-256 before using it, and fetches
-everything from the commit you installed.
+Built from `src/dpdfnet` in [zam-plugins](https://github.com/az4521/zam-plugins)
+with `npm run build:dpdfnet` (needs JDK 11 or newer in JAVA_HOME and
+ANDROID_HOME for the Android host; it fetches ONNX Runtime's Android package
+from Maven Central and checks its SHA-1). Zam checks every file against the
+manifest's SHA-256 before using it, and fetches everything from the commit
+you installed.
 
 ## Licences
 

@@ -1,4 +1,4 @@
-// plugins/dpdfnet/src/worklet.js
+// src/dpdfnet/src/worklet.js
 var DPDF_WIN = 960;
 var DPDF_HOP = 480;
 var DPDF_BINS = DPDF_WIN / 2 + 1;
@@ -381,7 +381,7 @@ if (typeof registerProcessor === "function") {
   );
 }
 
-// plugins/dpdfnet/model/dpdfnet2_48khz_hr.init.json
+// src/dpdfnet/model/dpdfnet2_48khz_hr.init.json
 var dpdfnet2_48khz_hr_init_default = {
   stateSize: 56436,
   erbNormInit: [
@@ -967,7 +967,7 @@ var dpdfnet2_48khz_hr_init_default = {
   ]
 };
 
-// plugins/dpdfnet/src/protocol.ts
+// src/dpdfnet/src/protocol.ts
 var control = (m) => JSON.stringify(m);
 function parseControl(data) {
   if (typeof data !== "string") return null;
@@ -986,7 +986,7 @@ function freshState(init) {
   return s;
 }
 
-// plugins/dpdfnet/src/webgpu/engine.ts
+// src/dpdfnet/src/webgpu/engine.ts
 var DPDF_BINS2 = 481;
 var C = 64;
 var SPEC = DPDF_BINS2 * 2;
@@ -2052,7 +2052,7 @@ var DpdfnetSession = class {
   }
 };
 
-// plugins/dpdfnet/src/webgpu/onnx.ts
+// src/dpdfnet/src/webgpu/onnx.ts
 var FLOAT = 1;
 var Reader = class _Reader {
   constructor(buf, pos, end) {
@@ -2166,7 +2166,7 @@ function readInitializers(model2) {
   return out;
 }
 
-// plugins/dpdfnet/src/webgpu/selftest.js
+// src/dpdfnet/src/webgpu/selftest.js
 var SELFTEST_FRAMES = 32;
 var SELFTEST_CHECK = 8;
 var SELFTEST_MIN_SNR_DB = 60;
@@ -2203,7 +2203,7 @@ function snrDb(want, got) {
   return 10 * Math.log10(s / Math.max(e, 1e-30));
 }
 
-// plugins/dpdfnet/src/worker.ts
+// src/dpdfnet/src/worker.ts
 var SPEC_SHAPE = [1, 1, DPDF_BINS, 2];
 var errorText = (err) => err instanceof Error ? err.message : String(err);
 var SPEC2 = DPDF_BINS * 2;

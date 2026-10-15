@@ -1,4 +1,4 @@
-// plugins/dpdfnet/src/worklet.js
+// src/dpdfnet/src/worklet.js
 var DPDF_WIN = 960;
 var DPDF_HOP = 480;
 var DPDF_BINS = DPDF_WIN / 2 + 1;
@@ -381,7 +381,7 @@ if (typeof registerProcessor === "function") {
   );
 }
 
-// plugins/dpdfnet/model/dpdfnet2_48khz_hr.init.json
+// src/dpdfnet/model/dpdfnet2_48khz_hr.init.json
 var dpdfnet2_48khz_hr_init_default = {
   stateSize: 56436,
   erbNormInit: [
@@ -967,7 +967,7 @@ var dpdfnet2_48khz_hr_init_default = {
   ]
 };
 
-// plugins/dpdfnet/src/protocol.ts
+// src/dpdfnet/src/protocol.ts
 var control = (m) => JSON.stringify(m);
 function initMessage(threads, modelBytes) {
   return control({
@@ -989,7 +989,7 @@ function parseReply(data) {
   }
 }
 
-// plugins/dpdfnet/src/backend.ts
+// src/dpdfnet/src/backend.ts
 var DPDFNET_SAMPLE_RATE = 48e3;
 var DPDFNET_ATTENUATION_DB = 25;
 var ASSETS = {
@@ -1330,7 +1330,7 @@ function createDpdfnet(zam) {
     throw lastErr;
   }
   const workletLoaded = /* @__PURE__ */ new WeakMap();
-  async function create(ctx) {
+  async function create(ctx, opts) {
     if (!dpdfnetSupported()) throw new Error("DPDFNet can't run here");
     if (ctx.sampleRate !== DPDFNET_SAMPLE_RATE)
       throw new Error(`DPDFNet needs 48 kHz, got ${ctx.sampleRate}`);
@@ -1351,7 +1351,7 @@ function createDpdfnet(zam) {
       channelCount: 1,
       channelCountMode: "explicit",
       processorOptions: {
-        attenuationDb: DPDFNET_ATTENUATION_DB,
+        attenuationDb: opts?.attenuationDb ?? DPDFNET_ATTENUATION_DB,
         slack,
         maxSlack
       }
@@ -1435,7 +1435,7 @@ function createDpdfnet(zam) {
   };
 }
 
-// plugins/dpdfnet/src/main.ts
+// src/dpdfnet/src/main.ts
 var dispose = null;
 var plugin = {
   onload(zam) {
