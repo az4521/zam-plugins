@@ -5,7 +5,7 @@
  * Imports only from within src/lib/plugins — no SDK, DOM, or localStorage.
  */
 import type { SettingsSchema } from "./settingsSchema";
-export declare const KNOWN_CAPABILITIES: readonly ["commands", "composer", "ui", "messages:read", "messages:send", "rooms:read", "storage", "network", "unsafe", "audio", "native"];
+export declare const KNOWN_CAPABILITIES: readonly ["commands", "composer", "ui", "messages:read", "messages:send", "rooms:read", "storage", "network", "unsafe", "audio", "native", "frames"];
 export type Capability = (typeof KNOWN_CAPABILITIES)[number];
 /** A file the plugin ships beside its bundle, fetched from the same pinned
  *  commit and checked against its SHA-256 before use. */

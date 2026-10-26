@@ -24,6 +24,14 @@
             "description": "Clearer AI noise removal for your microphone in calls (Ceva's DPDFNet-2). Runs on your device; heavier than the built-in DeepFilterNet3, which stands in on devices too slow for it.",
             "author": "az4521",
             "path": "plugins/com.zam.dpdfnet"
+        },
+        {
+            "id": "com.zam.fix-youtube-embeds",
+            "name": "Fix YouTube Embeds",
+            "version": "1.0.0",
+            "description": "Plays YouTube videos that otherwise say \"This video is unavailable\" in Zam (UMG's, for example). Desktop app only.",
+            "author": "az4521",
+            "path": "plugins/com.zam.fix-youtube-embeds"
         }
     ]
 }
