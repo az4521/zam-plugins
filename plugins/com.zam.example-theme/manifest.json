@@ -1,0 +1,31 @@
+{
+    "id": "com.zam.example-theme",
+    "name": "Example Theme",
+    "version": "1.0.0",
+    "description": "An example theme: pick a colour scheme, and see how a plugin ships its own CSS. Copy it to make your own.",
+    "author": "az4521",
+    "entry": "main.js",
+    "minAppVersion": "1.53.2",
+    "capabilities": ["ui"],
+    "settings": [
+        {
+            "key": "scheme",
+            "type": "select",
+            "label": "Colour scheme",
+            "default": "midnight",
+            "options": [
+                { "value": "midnight", "label": "Midnight" },
+                { "value": "forest", "label": "Forest" },
+                { "value": "rose", "label": "Rose" }
+            ],
+            "description": "Replaces the theme's backgrounds and accent."
+        },
+        {
+            "key": "rounded",
+            "type": "toggle",
+            "label": "Rounder corners",
+            "default": false,
+            "description": "Softens the corners of buttons and cards."
+        }
+    ]
+}
