@@ -32,6 +32,14 @@
             "description": "Clearer AI noise removal for your microphone in calls (Ceva's DPDFNet-2). Runs on your device; heavier than the built-in DeepFilterNet3, which stands in on devices too slow for it.",
             "author": "az4521",
             "path": "plugins/com.zam.dpdfnet"
+        },
+        {
+            "id": "com.zam.whisper",
+            "name": "Voice message transcription",
+            "version": "1.0.0",
+            "description": "Turn voice messages into text on your device (OpenAI Whisper, base model). Adds \"Transcribe\" to a voice message's menu; downloads about 105 MB the first time.",
+            "author": "az4521",
+            "path": "plugins/com.zam.whisper"
         }
     ]
 }

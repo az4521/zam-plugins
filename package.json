@@ -6,12 +6,14 @@
     "license": "GPL-3.0-only",
     "scripts": {
         "build:dpdfnet": "node src/dpdfnet/build.mjs",
-        "check": "tsc -p src/dpdfnet/tsconfig.json",
+        "build:whisper": "node src/whisper/build.mjs",
+        "check": "tsc -p src/dpdfnet/tsconfig.json && tsc -p src/whisper/tsconfig.json",
         "test": "vitest run",
         "format": "prettier --write src scripts",
         "sync-api": "node scripts/sync-zam-api.mjs"
     },
     "devDependencies": {
+        "@huggingface/transformers": "4.3.2",
         "@webgpu/types": "0.1.74",
         "adm-zip": "0.6.1",
         "esbuild": "0.25.12",

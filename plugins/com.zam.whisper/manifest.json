@@ -1,0 +1,64 @@
+{
+  "id": "com.zam.whisper",
+  "name": "Voice message transcription",
+  "version": "1.0.0",
+  "description": "Turn voice messages into text on your device (OpenAI Whisper, base model). Adds \"Transcribe\" to a voice message's menu; downloads about 105 MB the first time.",
+  "author": "az4521",
+  "entry": "main.js",
+  "minAppVersion": "1.55.0",
+  "capabilities": [
+    "storage"
+  ],
+  "assets": [
+    {
+      "path": "assets/worker.js",
+      "sha256": "3d851439b1f40af93b77d86190d31c85230e1865459d69672e9f596b3428e4f0",
+      "size": 1275492
+    },
+    {
+      "path": "assets/ort-wasm-simd-threaded.asyncify.mjs",
+      "sha256": "0966b6105cd936744498aa60df7a22cbd47af3374dbc64a9ab561c08a71e3611",
+      "size": 53057
+    },
+    {
+      "path": "assets/ort-wasm-simd-threaded.asyncify.wasm",
+      "sha256": "49871f5a4409519797e127440868a6d1923339d9185907f301a5b2a1d90af082",
+      "size": 26861777
+    },
+    {
+      "path": "assets/model/config.json",
+      "sha256": "f4d0608f7d918166da7edb3e188de5ef1bfe70d9802e785d271fd88111e9cf4b",
+      "size": 2243
+    },
+    {
+      "path": "assets/model/generation_config.json",
+      "sha256": "61070cf8de25b1e9256e8e102ded49d8d24a8369ed36ef84fdf21549e68125a0",
+      "size": 3832
+    },
+    {
+      "path": "assets/model/preprocessor_config.json",
+      "sha256": "a6a76d28c93edb273669eb9e0b0636a2bddbb1272c3261e47b7ca6dfdbac1b8d",
+      "size": 339
+    },
+    {
+      "path": "assets/model/tokenizer.json",
+      "sha256": "27fc476bfe7f17299480be2273fc0608e4d5a99aba2ab5dec5374b4482d1a566",
+      "size": 2480466
+    },
+    {
+      "path": "assets/model/tokenizer_config.json",
+      "sha256": "2e036e4dbacfdeb7242c7d4ec4149f4a16e86026048f94d1637e3a8ee9c6a573",
+      "size": 282682
+    },
+    {
+      "path": "assets/model/onnx/encoder_model_quantized.onnx",
+      "sha256": "5862993336bf33acd23736071aae2b32261d3b1b2f37780194460d4ef974dd46",
+      "size": 23201314
+    },
+    {
+      "path": "assets/model/onnx/decoder_model_merged_quantized.onnx",
+      "sha256": "fa3ef9902734ce5ae6f9ef2bdb2ba9a6c4b5785b09f4f420ce036573dc9d090b",
+      "size": 53693315
+    }
+  ]
+}
