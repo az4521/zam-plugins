@@ -12,6 +12,6 @@ wasm build), checked against SHA-256 sums; after that it is offline. The
 speech model runs in a Worker on the CPU, starts when you ask and stops after a
 minute idle. Clips over 15 minutes are refused.
 
-Needs Zam 1.55.0 or later (`zam.messages.annotate`, `zam.matrix.getMedia`).
+Needs Zam 1.54.2 or later (`zam.messages.annotate`, `zam.matrix.getMedia`).
 
 Build: `npm run build:whisper` from the repo root.

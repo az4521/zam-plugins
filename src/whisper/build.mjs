@@ -31,7 +31,7 @@ const PLUGIN_ID = "com.zam.whisper";
 const out = join(root, "plugins", PLUGIN_ID);
 /** The first Zam with zam.messages.annotate / refresh and zam.matrix.getMedia
  *  (raise it when the plugin starts using something newer). */
-const MIN_APP_VERSION = "1.55.0";
+const MIN_APP_VERSION = "1.54.2";
 const argMin = process.argv.indexOf("--min-app");
 const minAppVersion = argMin > 0 ? process.argv[argMin + 1] : MIN_APP_VERSION;
 

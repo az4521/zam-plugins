@@ -5,7 +5,7 @@
   "description": "Turn voice messages into text on your device (OpenAI Whisper, base model). Adds \"Transcribe\" to a voice message's menu; downloads about 105 MB the first time.",
   "author": "az4521",
   "entry": "main.js",
-  "minAppVersion": "1.55.0",
+  "minAppVersion": "1.54.2",
   "capabilities": [
     "storage"
   ],
