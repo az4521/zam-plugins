@@ -3,6 +3,9 @@
 Zam's official plugin repo. Zam reads it straight from GitHub at a pinned
 commit, so what's published here is what users run.
 
+New to writing plugins? [GUIDE.md](GUIDE.md) shows which part of the API
+to use for what (settings tabs, member list, custom events, overlays, DOM).
+
 ## Layout
 
     index.json            the plugins on offer (schema 1)
