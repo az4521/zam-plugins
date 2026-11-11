@@ -208,7 +208,7 @@ export interface MessageRenderContext {
 }
 /** Named parts of Zam's window, for zam.dom.region. Each is marked with a
  *  `data-zam-region` attribute, which is also fine to use in CSS. */
-export type ZamRegion = "app" | "space-sidebar" | "room-list" | "room-header" | "timeline" | "composer" | "member-list";
+export type ZamRegion = "app" | "space-sidebar" | "room-list" | "room-header" | "timeline" | "composer" | "member-list" | "call";
 export interface DomObserver {
     /** Runs for every element matching the selector, now and as they
      *  appear. A function it returns runs when the element leaves the page
@@ -479,6 +479,44 @@ export interface PluginPresenceMusic extends PluginPresenceBase {
     };
 }
 export type PluginPresence = PluginPresenceActivity | PluginPresenceMusic;
+/** A button in the call screen's control bar (zam.call.addControl). */
+export interface CallControl {
+    id: string;
+    label: string;
+    /** An SVG path (`d`) drawn in a 24x24 box. */
+    icon?: string;
+    /** Whether it shows as switched on (accent colour). Read on every
+     *  repaint of the bar, so keep it cheap; call `zam.call.refreshUi()`
+     *  after the answer changes. */
+    active?(): boolean;
+    onClick(ctx: {
+        roomId: string;
+        anchor: HTMLElement;
+    }): void | Promise<void>;
+}
+/** An area of the call screen between the tiles and the control bar, shown
+ *  while open (zam.call.openPanel). */
+export interface CallPanelRegistration {
+    id: string;
+    title: string;
+    /** Runs each time the call screen shows the panel; the cleanup when it
+     *  closes or the call screen goes away. The panel's width is the call
+     *  screen's, its height your content's (the host caps it at 60% of the
+     *  screen and scrolls past that). */
+    render(el: HTMLElement, ctx: {
+        roomId: string;
+    }): void | (() => void);
+}
+/** Content laid over each participant's tile in the call screen. */
+export interface CallTileDecoration {
+    id: string;
+    /** `el` covers the tile and lets clicks through, except on children that
+     *  set `pointer-events: auto`. */
+    render(el: HTMLElement, ctx: {
+        roomId: string;
+        userId: string;
+    }): void | (() => void);
+}
 /** A data packet from someone in the call (zam.call.onData). */
 export interface PluginCallPacket {
     payload: Uint8Array;
@@ -861,7 +899,8 @@ export interface ZamPluginApi {
          *  copy in the background when it is older than a minute. */
         get(userId?: string): PluginPresence[];
     };
-    /** The voice call you are in. Needs the "call" capability. Everything
+    /** The voice call you are in, and the call screen. Needs the "call"
+     *  capability. Everything
      *  here is private to your plugin: topics and track names are scoped to
      *  its id, so only copies of the same plugin (on other users' devices)
      *  see them, and core messages (soundboard and the like) can't be read or
@@ -879,6 +918,19 @@ export interface ZamPluginApi {
             reliable?: boolean;
             to?: string[];
         }): Promise<void>;
+        /** A button in the call screen's control bar. */
+        addControl(control: CallControl): Disposable;
+        /** Register an area of the call screen; it stays hidden until
+         *  `openPanel`. */
+        addPanel(panel: CallPanelRegistration): Disposable;
+        /** Show or hide a panel this plugin registered. Several can be open
+         *  at once. Panels only appear while the call screen is open. */
+        openPanel(id: string): void;
+        closePanel(id?: string): void;
+        /** Content over each participant's tile. */
+        addTileDecoration(decoration: CallTileDecoration): Disposable;
+        /** Re-read the `active` of controls after your state changed. */
+        refreshUi(): void;
         /** Packets other copies of the plugin send to `topic`. */
         onData(topic: string, handler: (packet: PluginCallPacket) => void): Disposable;
         /** Publish a data track: a stream of frames for steady or
