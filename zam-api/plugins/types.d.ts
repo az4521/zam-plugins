@@ -124,6 +124,103 @@ export interface HeaderButton {
         roomId: string;
     }): void | (() => void);
 }
+/** A section of the room settings dialog (beside General, Access, ...). */
+export interface RoomSettingsTabRegistration {
+    id: string;
+    label: string;
+    /** Whether the room gets this tab. Defaults to every room and space. */
+    when?(ctx: {
+        roomId: string;
+        isSpace: boolean;
+    }): boolean;
+    /** Runs each time the tab is opened; the cleanup when it is left or the
+     *  dialog closes. */
+    render(el: HTMLElement, ctx: {
+        roomId: string;
+        isSpace: boolean;
+    }): void | (() => void);
+}
+/** A page of the app settings dialog, listed under the "Plugins" group. */
+export interface SettingsPageRegistration {
+    id: string;
+    label: string;
+    render(el: HTMLElement): void | (() => void);
+}
+/** What a member list row shows beside a user. `subtitle` is the second
+ *  line (a status, say); `badge` a short tag after the name. */
+export interface MemberDecoration {
+    badge?: string;
+    subtitle?: string;
+    tooltip?: string;
+}
+export type MemberDecorator = (ctx: {
+    roomId: string;
+    userId: string;
+}) => MemberDecoration | null;
+/** A button on a user's profile card. */
+export interface UserActionItem {
+    id: string;
+    label: string;
+    when?(ctx: UserActionContext): boolean;
+    onSelect(ctx: UserActionContext): void | Promise<void>;
+}
+export interface UserActionContext {
+    userId: string;
+    /** The room the card was opened from. */
+    roomId: string;
+    isSelf: boolean;
+}
+/** Plugin content inside a user's profile card, under the profile fields. */
+export interface ProfileSectionRegistration {
+    id: string;
+    render(el: HTMLElement, ctx: UserActionContext): void | (() => void);
+}
+/** An entry in a room's right-click / long-press menu in the room list. */
+export interface RoomActionItem {
+    id: string;
+    label: string;
+    when?(ctx: {
+        roomId: string;
+        isSpace: boolean;
+    }): boolean;
+    onSelect(ctx: {
+        roomId: string;
+        isSpace: boolean;
+    }): void | Promise<void>;
+}
+/** Renders timeline events Zam has no view of its own for: a custom event
+ *  type (`eventType`, e.g. "com.example.superreact"), or a custom `msgtype`
+ *  of `m.room.message`. Zam's own types can't be taken over. */
+export interface MessageRenderer {
+    eventType?: string;
+    msgtype?: string;
+    render(el: HTMLElement, ctx: MessageRenderContext): void | (() => void);
+}
+export interface MessageRenderContext {
+    roomId: string;
+    eventId: string;
+    sender: string;
+    type: string;
+    /** A copy of the (latest edit of the) content. */
+    content: Record<string, unknown>;
+    timestamp: number;
+    isOwn: boolean;
+}
+/** Named parts of Zam's window, for zam.dom.region. Each is marked with a
+ *  `data-zam-region` attribute, which is also fine to use in CSS. */
+export type ZamRegion = "app" | "space-sidebar" | "room-list" | "room-header" | "timeline" | "composer" | "member-list";
+export interface DomObserver {
+    /** Runs for every element matching the selector, now and as they
+     *  appear. A function it returns runs when the element leaves the page
+     *  or the observer is disposed. */
+    added(el: HTMLElement): void | (() => void);
+}
+export interface OverlayOptions {
+    render(el: HTMLElement): void | (() => void);
+    /** Let the overlay take clicks. Off by default: clicks go through it to
+     *  Zam, except on children that set `pointer-events: auto`. */
+    interactive?: boolean;
+}
 export interface ShortcutRegistration {
     keys: string;
     description: string;
@@ -157,6 +254,72 @@ export type SwipeHandler = (ctx: {
     threshold: SwipeThreshold;
 }) => void;
 export type PluginEventName = "message" | "message-sent" | "timeline" | "reaction-added" | "member-join" | "typing" | "room-enter" | "room-update" | "notification" | "sync";
+/** A timeline event as plugins see it: a plain copy, never a MatrixEvent. */
+export interface PluginTimelineEvent {
+    roomId: string;
+    eventId: string;
+    sender: string;
+    type: string;
+    content: Record<string, unknown>;
+    timestamp: number;
+    isOwn: boolean;
+    /** False for events that came in with the first sync after start-up
+     *  (history, not news). */
+    isLive: boolean;
+}
+/** What each `events.on` name hands its handler. */
+export interface PluginEventMap {
+    /** A new message, sticker, poll or file offer in a room's main
+     *  timeline (not thread replies or edits). */
+    message: PluginTimelineEvent;
+    /** Same as "message"; kept for older plugins. */
+    timeline: PluginTimelineEvent;
+    /** The server accepted an event sent from this device. */
+    "message-sent": {
+        roomId: string;
+        eventId: string;
+        type: string;
+        content: Record<string, unknown>;
+    };
+    "reaction-added": {
+        roomId: string;
+        eventId: string;
+        sender: string;
+        /** The reacted-to event and the reaction key (an emoji or mxc://). */
+        targetEventId: string | null;
+        key: string | null;
+        relatesTo: unknown;
+        isOwn: boolean;
+        isLive: boolean;
+    };
+    /** Someone joined a room you are in (after start-up). */
+    "member-join": {
+        roomId: string;
+        userId: string;
+        displayName: string;
+    };
+    /** Who is typing in a room changed. Excludes you. */
+    typing: {
+        roomId: string;
+        userIds: string[];
+    };
+    /** The user opened a room (`roomId` null: left for a non-room view). */
+    "room-enter": {
+        roomId: string | null;
+        previousRoomId: string | null;
+    };
+    "room-update": Record<string, never>;
+    /** Zam showed a desktop notification for a message. */
+    notification: {
+        roomId: string;
+        eventId: string;
+        title: string;
+        body: string;
+    };
+    sync: {
+        state: "PREPARED" | "RECONNECTED";
+    };
+}
 export interface EventSubscription {
     event: PluginEventName;
     handler: (payload: unknown) => void;
@@ -181,6 +344,26 @@ export interface PluginRoomSummary {
     avatarUrl: string | null;
     /** m.room.join_rules value ("invite"/"public"/…); "invite" if unset. */
     joinRule: string;
+    isSpace: boolean;
+}
+/** One loaded event, for matrix.getEvent. */
+export interface PluginEventSummary {
+    eventId: string;
+    roomId: string;
+    sender: string;
+    type: string;
+    /** Latest edit's content; a copy. */
+    content: Record<string, unknown>;
+    timestamp: number;
+    isRedacted: boolean;
+    isOwn: boolean;
+}
+export interface PluginPresenceState {
+    presence: "online" | "unavailable" | "offline";
+    statusMsg: string | null;
+    /** Unix ms of the user's last activity, if known. */
+    lastActiveAt: number | null;
+    currentlyActive: boolean;
 }
 /** Plain member summary — never a live RoomMember. */
 export interface PluginMemberSummary {
@@ -296,6 +479,78 @@ export interface PluginPresenceMusic extends PluginPresenceBase {
     };
 }
 export type PluginPresence = PluginPresenceActivity | PluginPresenceMusic;
+/** A data packet from someone in the call (zam.call.onData). */
+export interface PluginCallPacket {
+    payload: Uint8Array;
+    /** Matrix ID of the sender. */
+    userId: string;
+    /** The sender's device, when known. */
+    deviceId: string | null;
+    topic: string;
+}
+export interface PluginDataTrackFrame {
+    payload: Uint8Array;
+    /** The publisher's timestamp for the frame (ms), if it set one. */
+    timestamp: number | null;
+}
+/** A data track you publish into the call. */
+export interface PluginLocalDataTrack {
+    readonly name: string;
+    /** Send one frame to everyone subscribed. Resolves false when the frame
+     *  was dropped (the track is unpublished, or the connection can't keep
+     *  up). */
+    push(payload: Uint8Array, timestamp?: number): Promise<boolean>;
+    unpublish(): Promise<void>;
+}
+/** A data track someone else publishes in the call. */
+export interface PluginRemoteDataTrack {
+    readonly name: string;
+    readonly userId: string;
+    readonly deviceId: string | null;
+    /** Start receiving frames; only those sent after this call arrive.
+     *  Disposing stops them (the last one stops the subscription). */
+    subscribe(onFrame: (frame: PluginDataTrackFrame) => void): Disposable;
+    /** Runs when the publisher unpublishes or the call ends. */
+    onEnded(cb: () => void): Disposable;
+}
+/** The live synth (zam.midi.openSynth). Channels are 0-15, the rest 0-127
+ *  unless stated. */
+export interface PluginMidiSynth {
+    noteOn(channel: number, note: number, velocity: number): void;
+    noteOff(channel: number, note: number): void;
+    /** Pick the instrument (General MIDI program) for a channel. */
+    programChange(channel: number, program: number): void;
+    controlChange(channel: number, controller: number, value: number): void;
+    /** 0 to 16383; 8192 is centre. */
+    pitchBend(channel: number, value: number): void;
+    /** Silence every sounding note (all channels, or one). */
+    allNotesOff(channel?: number): void;
+    /** Another player (a MIDI message in the timeline, or another plugin's
+     *  synth) took the engine; the synth stops and ignores further notes.
+     *  Open it again to carry on. */
+    onPreempted(cb: () => void): Disposable;
+    /** Give the engine up. */
+    close(): void;
+}
+/** A song playing on the sound bank (zam.midi.play). */
+export interface PluginMidiPlayer {
+    /** Start or resume. Call it from a click: browsers only allow audio
+     *  then. */
+    play(): void;
+    pause(): void;
+    /** Seconds. */
+    seek(time: number): void;
+    /** The song's length in seconds. */
+    readonly duration: number;
+    onTime(cb: (currentTime: number, duration: number) => void): Disposable;
+    onEnded(cb: () => void): Disposable;
+    /** Another player took the engine; it stays where it was and play()
+     *  picks it up again. */
+    onPreempted(cb: () => void): Disposable;
+    /** Audio was blocked (not started from a click). */
+    onBlocked(cb: () => void): Disposable;
+    close(): void;
+}
 /** The `zam` object a plugin's `onload` receives (spec §6). */
 export interface ZamPluginApi {
     app: {
@@ -349,9 +604,64 @@ export interface ZamPluginApi {
          *  changed. */
         refresh(): void;
         registerEmbed(embed: MessageEmbed): Disposable;
+        /** Show a custom event type or msgtype in the timeline (see
+         *  MessageRenderer). Throws for types Zam renders itself. */
+        registerRenderer(renderer: MessageRenderer): Disposable;
     };
     room: {
         addHeaderButton(btn: HeaderButton): Disposable;
+        /** A tab of the room settings dialog. */
+        addSettingsTab(tab: RoomSettingsTabRegistration): Disposable;
+    };
+    /** The room list. */
+    rooms: {
+        /** An entry in a room's context menu. */
+        addAction(action: RoomActionItem): Disposable;
+    };
+    /** The member list and profile cards. */
+    members: {
+        /** A badge and/or second line beside users in the member list. Runs
+         *  for every visible member each time the list or `refresh()`
+         *  changes, so keep it cheap; fetch elsewhere and refresh. */
+        decorate(fn: MemberDecorator): Disposable;
+        /** Re-run the `decorate` functions after the plugin's data changed. */
+        refresh(): void;
+        /** A button on profile cards. */
+        addAction(action: UserActionItem): Disposable;
+        /** Content on profile cards. */
+        addProfileSection(section: ProfileSectionRegistration): Disposable;
+    };
+    /** Where the user is. */
+    navigation: {
+        /** The open room, or null when another view (inbox, space home) is
+         *  showing. Listen to the "room-enter" event for changes. */
+        getActiveRoomId(): string | null;
+        /** Open a room, switching space if needed; with `eventId`, scroll to
+         *  that message. */
+        openRoom(roomId: string, opts?: {
+            eventId?: string;
+        }): void;
+    };
+    /**
+     * Zam's own DOM. Plugins run in the page with full access, but Zam's
+     * markup is Svelte's: it re-renders and drops what a plugin changed, and
+     * removing or moving its nodes breaks it. So: read it, decorate it with
+     * `style()` and classes, put your own nodes beside it or in an overlay,
+     * and treat anything not named here (a Tailwind class, nesting depth) as
+     * changeable without notice. The stable hooks are `data-zam-region`,
+     * `data-event-id` and `data-sender` on message rows, `data-user-id` on
+     * member rows and `data-room-id` on room list rows.
+     */
+    dom: {
+        region(name: ZamRegion): HTMLElement | null;
+        /** The row of a message in the open timeline, if it is on screen. */
+        messageElement(eventId: string): HTMLElement | null;
+        /** Watch for elements matching a CSS selector (see DomObserver). */
+        observe(selector: string, observer: DomObserver): Disposable;
+        /** Set inline styles (CSS property names, e.g. "transform",
+         *  "--my-var") on any element; disposing, or unloading the plugin,
+         *  puts the old values back. */
+        style(el: HTMLElement, props: Record<string, string>): Disposable;
     };
     shortcuts: {
         register(sc: ShortcutRegistration): Disposable;
@@ -363,7 +673,20 @@ export interface ZamPluginApi {
             /** Accessible name of the popover dialog; defaults to the plugin's name. */
             label?: string;
         }): Disposable;
+        /** A side panel beside the timeline, opened with `openPanel`. */
         registerPanel(panel: PanelRegistration): Disposable;
+        /** Open a registered panel for a room (the active one if omitted),
+         *  closing whatever side panel was open. */
+        openPanel(id: string, opts?: {
+            roomId?: string;
+        }): void;
+        /** Close this plugin's panel if one is open. */
+        closePanel(): void;
+        /** A layer over the whole window (effects, animations, games). */
+        addOverlay(opts: OverlayOptions): Disposable;
+        /** A page of the app settings, for more than a `settings` schema
+         *  can express. */
+        addSettingsPage(page: SettingsPageRegistration): Disposable;
         notify(opts: {
             title?: string;
             body: string;
@@ -376,7 +699,7 @@ export interface ZamPluginApi {
         addStyles(css: string): Disposable;
     };
     events: {
-        on(event: PluginEventName, handler: (payload: unknown) => void): Disposable;
+        on<K extends PluginEventName>(event: K, handler: (payload: PluginEventMap[K]) => void): Disposable;
     };
     matrix: {
         sendMessage(roomId: string, content: object): Promise<void>;
@@ -438,6 +761,40 @@ export interface ZamPluginApi {
         /** Redact one of YOUR OWN events (unsend). Rejects if the event is not
          *  yours or not found — a plugin cannot redact others' messages here. */
         redactOwn(roomId: string, eventId: string, reason?: string): Promise<void>;
+        /** Send an event of any non-state type (a custom one such as
+         *  "com.example.superreact", say), encrypted in encrypted rooms.
+         *  Resolves with its event id once the server has it. */
+        sendEvent(roomId: string, type: string, content: Record<string, unknown>): Promise<{
+            eventId: string;
+        }>;
+        /** One event the client has loaded, or null. */
+        getEvent(roomId: string, eventId: string): PluginEventSummary | null;
+        /** The rooms (not spaces) and spaces you have joined. */
+        getRooms(): PluginRoomSummary[];
+        /** A room state event's content, or null if unset. */
+        getState(roomId: string, type: string, stateKey?: string): Record<string, unknown> | null;
+        /** Every state event of a type, one per state key. */
+        listState(roomId: string, type: string): {
+            stateKey: string;
+            sender: string;
+            content: Record<string, unknown>;
+        }[];
+        /** Whether you have the power level to send that state event type. */
+        canSetState(roomId: string, type: string): boolean;
+        /** Set a room state event (needs the power level for it). */
+        setState(roomId: string, type: string, content: Record<string, unknown>, stateKey?: string): Promise<void>;
+        /** Your account data (synced to all your devices), or null. With
+         *  `roomId`, your data for that room. */
+        getAccountData(type: string, roomId?: string): Record<string, unknown> | null;
+        setAccountData(type: string, content: Record<string, unknown>, roomId?: string): Promise<void>;
+        /** A user's global display name and avatar, from the server. */
+        getProfile(userId: string): Promise<{
+            displayName: string | null;
+            avatarUrl: string | null;
+        }>;
+        /** A user's online status as Zam last heard it, or null when the
+         *  server sends none. */
+        getPresence(userId: string): PluginPresenceState | null;
     };
     storage: {
         get<T>(k: string, fb?: T): T;
@@ -503,6 +860,51 @@ export interface ZamPluginApi {
          *  omitted), from what Zam has loaded; asks the server for a fresh
          *  copy in the background when it is older than a minute. */
         get(userId?: string): PluginPresence[];
+    };
+    /** The voice call you are in. Needs the "call" capability. Everything
+     *  here is private to your plugin: topics and track names are scoped to
+     *  its id, so only copies of the same plugin (on other users' devices)
+     *  see them, and core messages (soundboard and the like) can't be read or
+     *  forged. Nothing is stored; late joiners miss earlier packets. */
+    call: {
+        /** The room whose call you are in, or null. */
+        getRoomId(): string | null;
+        /** Runs when you join (the room id) or leave (null) a call. */
+        onChange(handler: (roomId: string | null) => void): Disposable;
+        /** Send a data packet to the call (or just `to`, Matrix IDs).
+         *  Reliable packets (the default) are ordered and at most 15000
+         *  bytes; lossy ones (`reliable: false`) at most 1300. Rejects when
+         *  you are not in a call. */
+        sendData(topic: string, payload: Uint8Array, opts?: {
+            reliable?: boolean;
+            to?: string[];
+        }): Promise<void>;
+        /** Packets other copies of the plugin send to `topic`. */
+        onData(topic: string, handler: (packet: PluginCallPacket) => void): Disposable;
+        /** Publish a data track: a stream of frames for steady or
+         *  high-rate data. Rejects when you are not in a call; unpublished
+         *  when the call ends. */
+        publishDataTrack(name: string): Promise<PluginLocalDataTrack>;
+        /** Data tracks other copies of the plugin publish, including those
+         *  already there. */
+        onDataTrack(handler: (track: PluginRemoteDataTrack) => void): Disposable;
+    };
+    /** Zam's MIDI synth: the sound bank behind MIDI messages in the
+     *  timeline. One thing plays at a time (a plugin's synth or player, or a
+     *  message), and a new one takes the engine from the last. Local audio
+     *  only: it is not sent into a call. Needs the "midi" capability. */
+    midi: {
+        /** Whether this device can play MIDI (an AudioWorklet and a sound
+         *  bank). */
+        available(): Promise<boolean>;
+        /** Open the live synth. Call it from a click (browsers only start
+         *  audio then); rejects if audio is blocked, resolves null when
+         *  MIDI can't play here. */
+        openSynth(): Promise<PluginMidiSynth | null>;
+        /** Load a standard MIDI file into a player; null when MIDI can't
+         *  play here. Playback starts with `play()`. Throws on a file that
+         *  is not MIDI. */
+        play(midi: ArrayBuffer | Uint8Array): Promise<PluginMidiPlayer | null>;
     };
     /** Full-power escape hatch (full-trust model). Returns the live matrix-js-sdk
      *  client instance (or null before login). You own the stability + safety risk —
