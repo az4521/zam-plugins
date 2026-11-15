@@ -20,6 +20,8 @@ so you rarely need to call it yourself.
 - Room header buttons that open a side panel: `room.addHeaderButton`.
 - Popovers and toasts: `ui.openPopover`, `ui.notify`.
 - CSS: `ui.addStyles`.
+- Incoming-call ringtones (1.63.0+): `ringtones.register`, see
+  [Ringtones](#ringtones).
 
 ## Put a section in a room's settings
 
@@ -138,6 +140,66 @@ The DOM rules:
 `zam.ui.registerPanel({ id, title, render })`, then `zam.ui.openPanel(id)`
 opens it beside the timeline, for example from a command or a message action.
 `zam.ui.closePanel()` closes it. Changing rooms also closes it.
+
+## Ringtones
+
+Needs Zam 1.63.0 or later. `zam.ringtones.register` adds a ringtone to
+Settings → Voice & audio → Ringing, listed as "name (Plugin Name)". When the
+user picks it, it rings for incoming calls instead of the built-in tone.
+
+```js
+// A sound file, looped at the user's ringtone volume. `src` is an https:,
+// blob: or data: URL; zam.assets.url gives a blob: URL for a manifest asset.
+zam.ringtones.register({
+    id: "chime",
+    name: "Chime",
+    src: await zam.assets.url("sounds/chime.ogg", "audio/ogg"),
+});
+
+// A sound you make yourself: WebAudio, or MIDI through zam.midi.
+let player = null;
+zam.ringtones.register({
+    id: "theme",
+    name: "Theme tune",
+    async start() {
+        player = await zam.midi.play(await zam.assets.get("theme.mid"));
+        if (!player) throw new Error("MIDI can't play here");
+        player.onEnded(() => player?.play()); // loop it
+        player.play();
+    },
+    stop() {
+        player?.close(); // may run more than once, or before start finishes
+        player = null;
+    },
+});
+```
+
+What Zam guarantees, so a call always rings:
+
+- `start` has about two seconds to start making sound. If it throws, its
+  promise rejects, or it takes longer than that, Zam calls `stop` and plays
+  the built-in tone instead.
+- `stop` runs when the call is answered or declined, when the caller hangs
+  up, after the ring's ten-second limit, and when your plugin is disabled.
+  Make it safe to call twice, and before `start` has finished.
+- If the plugin is disabled while its ringtone is selected, the call rings
+  the built-in tone. The choice is kept and comes back when the plugin is
+  turned on again.
+- Ids are 1 to 64 letters, digits, `.`, `_` or `-`, unique within your
+  plugin. A bad ringtone or a repeated id throws from `register`.
+
+Things to know:
+
+- An incoming call starts the ringtone without a click, and browsers may
+  block audio that wasn't started by one. `zam.midi` in particular says to
+  start it from a click. If your sound is blocked, the user hears the
+  built-in tone, not silence. Test it on the platforms you care about.
+- Schedule notes with WebAudio timing rather than `setTimeout`: timers are
+  slowed down while Zam's window is in the background.
+- On Android, while Zam is in the background, the phone's own call screen
+  rings with the system ringtone, and plugin ringtones aren't used.
+- There is no hook for the sound a caller hears while waiting for an answer;
+  Zam doesn't play one.
 
 ## Matrix data
 

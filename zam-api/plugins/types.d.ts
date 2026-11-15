@@ -116,6 +116,35 @@ export interface MessageEmbed {
         html(markup: string): void;
     }): void | (() => void);
 }
+/** One GIF in a provider's results. `url` and `previewUrl` must be http(s). */
+export interface GifProviderItem {
+    id: string;
+    /** Full-size media: what gets sent when `pageUrl` is absent. */
+    url: string;
+    /** A page link sent in place of `url`, so the message carries a readable
+     *  link. */
+    pageUrl?: string;
+    /** Small still or animated image for the grid. */
+    previewUrl: string;
+    /** Small mp4 for the grid; tiles animate sooner than with an image. */
+    previewVideoUrl?: string;
+    width?: number;
+    height?: number;
+}
+/** A source of GIFs, shown as its own tab in the GIF picker. */
+export interface GifProvider {
+    /** Unique within the plugin. */
+    id: string;
+    /** The tab's name. */
+    label: string;
+    /** An empty `query` asks for trending/featured GIFs. `page` starts at 1
+     *  and grows as the user scrolls; the picker never skips one. A thrown
+     *  error shows a "try again" message. */
+    search(query: string, page: number): Promise<{
+        items: GifProviderItem[];
+        hasNext: boolean;
+    }>;
+}
 export interface HeaderButton {
     id: string;
     label: string;
@@ -589,6 +618,33 @@ export interface PluginMidiPlayer {
     onBlocked(cb: () => void): Disposable;
     close(): void;
 }
+interface PluginRingtoneBase {
+    /** Stable within the plugin (letters, digits, `.`, `_`, `-`; max 64). The
+     *  user's choice is stored as `plugin:<pluginId>:<id>`. */
+    id: string;
+    /** Shown in the ringtone picker, as "name (Plugin Name)". */
+    name: string;
+}
+/** A ringtone that loops an audio file. `src` is an https:, blob: (e.g. from
+ *  zam.assets.url) or data: URL. Plays at the ringtone volume. */
+export interface PluginRingtoneAudio extends PluginRingtoneBase {
+    src: string;
+    start?: never;
+    stop?: never;
+}
+/** A ringtone the plugin makes itself (WebAudio, MIDI through zam.midi, ...).
+ *  `start` runs when the call rings and may return a promise; it has about two
+ *  seconds to start sounding. `stop` runs on answer, decline, the caller giving
+ *  up, the ring's ten-second limit, or the plugin unloading. If `start` throws,
+ *  rejects or hangs, Zam calls `stop` and rings the built-in tone instead, so a
+ *  call always rings. `stop` can run more than once, and before `start` has
+ *  settled, so make it idempotent. */
+export interface PluginRingtoneCallback extends PluginRingtoneBase {
+    src?: never;
+    start(): void | Promise<void>;
+    stop(): void;
+}
+export type PluginRingtone = PluginRingtoneAudio | PluginRingtoneCallback;
 /** The `zam` object a plugin's `onload` receives (spec §6). */
 export interface ZamPluginApi {
     app: {
@@ -645,6 +701,12 @@ export interface ZamPluginApi {
         /** Show a custom event type or msgtype in the timeline (see
          *  MessageRenderer). Throws for types Zam renders itself. */
         registerRenderer(renderer: MessageRenderer): Disposable;
+    };
+    /** The GIF picker. */
+    gifs: {
+        /** Add a tab with GIFs from another source. Items with a non-http(s)
+         *  URL are dropped. */
+        registerProvider(provider: GifProvider): Disposable;
     };
     room: {
         addHeaderButton(btn: HeaderButton): Disposable;
@@ -858,6 +920,12 @@ export interface ZamPluginApi {
     /** Needs the "audio" capability. */
     audio: {
         registerMicFilter(filter: MicFilter): Disposable;
+    };
+    /** Incoming-call ringtones. Each one shows in Settings > Voice & Audio >
+     *  Ringing once registered, and rings in place of the built-in tone while
+     *  it is selected. Throws on an invalid ringtone or a duplicate id. */
+    ringtones: {
+        register(ringtone: PluginRingtone): Disposable;
     };
     /** The plugin's own native code (manifest `native`): desktop and
      *  Android apps, needs the "native" capability, and runs only after the
