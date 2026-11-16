@@ -50,6 +50,14 @@ For more than a `settings` schema can express, use
 `zam.ui.addSettingsPage({ id, label, render(el) })`. The page appears under a
 "Plugins" group in Settings.
 
+## A section on the Debug page
+
+Developer tools (inspecting or writing raw account data, say) belong on the
+Debug settings page rather than in a settings page of their own:
+`zam.ui.addDebugSection({ id, title, render(el) })`. Sections appear below
+Zam's own debug tools; `render` runs each time the page is shown and its
+returned cleanup when the page is left.
+
 ## Member list, profile cards, room list
 
 ```js
