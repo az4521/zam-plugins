@@ -209,6 +209,127 @@ Things to know:
 - There is no hook for the sound a caller hears while waiting for an answer;
   Zam doesn't play one.
 
+## Call transports
+
+Needs Zam 1.66.0 or newer, and the `call:transport` capability in
+the manifest. `zam.call.registerTransport` carries call media over a network
+of your own (I2P, Tor, an overlay) beside Zam's SFU and the full mesh. Zam
+keeps capture, playback, the call screen, mutes and speaking indicators; the
+plugin moves the media. Like the mesh, a transport is a publish target: a
+member who publishes on it is heard only by clients that have the same plugin.
+
+```js
+zam.call.registerTransport({
+    id: "overlay",
+    label: "Overlay network",
+    privacy: { exposesIp: false, thirdParty: "the overlay's relays" },
+    create(ctx) {
+        // One instance per call, made once the user allows receiving.
+        const links = new Map(); // identity -> your connection
+        const offSignal = ctx.signalling.onMessage((from, content) => {
+            handleHandshake(from, content); // JSON from the peer's plugin
+        });
+        return {
+            setMembers(peers) {
+                // Connect to the members who publish on this transport.
+                for (const p of peers) {
+                    if (p.publishes && !links.has(p.identity)) connectTo(p);
+                }
+            },
+            close() {
+                offSignal.dispose();
+                for (const c of links.values()) c.close();
+                links.clear();
+            },
+        };
+    },
+});
+```
+
+The factory:
+
+- `id` is letters, digits, `.`, `_` or `-`, up to 64 characters. `label` is
+  what the user sees, and `privacy` fills the consent dialog. A duplicate or
+  invalid id throws from `registerTransport`. The transport applies from the
+  next call you join, or from the current call's next membership change.
+- `use({ roomId })` (optional) says whether to publish on the transport in
+  that room. When you join, Zam asks each factory in order and the first that
+  returns `true` gets the consent dialog. Allow: you publish on it and not on
+  the SFU, and your membership names it along with what `describe({ roomId })`
+  returned (small JSON, at most 2 KiB), such as your address. Deny: you join
+  on the SFU as usual. Cancel: you don't join.
+- Receiving: members whose membership names the transport are passed to
+  `setMembers`. Before the first such member in a call, Zam asks once. Allow
+  makes your instance with `create(ctx)`. Deny makes none, and that member is
+  not heard.
+
+The context `ctx` for one call:
+
+- `ctx.publishing` says whether you publish on this transport in this call.
+  `ctx.local.publications()` lists your microphone, camera and screen share,
+  processed the way Zam processes them for any transport. Send each
+  publication's `track` to the peers, and nothing when it is `null`. Use
+  `ctx.local.onChange` to learn when tracks come, go, mute or change.
+- `ctx.remote.addTrack(identity, { source, track })` takes any live
+  `MediaStreamTrack`, such as a `MediaStreamTrackGenerator` you feed decoded
+  frames. Zam keeps one track per source per peer, and adding the same source
+  again replaces it. The returned handle's `enabled` is false while the user
+  hides that video, so stop asking for it. `setMuted`, `end` and
+  `onEnabledChange` cover the rest. `ctx.remote.setSpeakers(identities)` tells
+  Zam who is talking.
+- `ctx.signalling.send(peer, content)` and `onMessage` carry JSON between
+  plugin instances as Olm-encrypted to-device messages, scoped to this call and
+  capped at 32 KiB. Zam drops anything from a device other than the member's
+  claimed one.
+- Call data (the soundboard, `zam.call.sendData`) goes over a transport you
+  publish on when the instance implements `sendData(to, frame, { reliable })`
+  and `reachable()`. Hand frames from peers to `ctx.remote.deliverData`. Data
+  tracks don't travel over plugin transports.
+
+An instance lives for one call. Zam closes it when the call ends, when the
+factory is unregistered, or when the plugin unloads. If `create` throws, Zam
+shows a notice and the call goes on without that transport.
+
+## Raw sockets
+
+Needs Zam 1.66.0 or newer, the `sockets` capability and the
+manifest's `sockets` list. `zam.network` works in the desktop and Android apps
+only. On the web, `zam.network.available()` is false and `connectTcp` and
+`openUdp` throw.
+
+```json
+{
+    "capabilities": ["sockets"],
+    "sockets": ["tcp:127.0.0.1:7656"]
+}
+```
+
+```js
+// Talk to a local SAM bridge (I2P) on the port the manifest lists.
+const sock = await zam.network.connectTcp("127.0.0.1", 7656);
+sock.onData((bytes) => console.log(new TextDecoder().decode(bytes)));
+sock.onClose((error) => {
+    if (error) console.warn("SAM closed:", error);
+});
+await sock.write("HELLO VERSION MIN=3.1 MAX=3.3\n");
+```
+
+What to know:
+
+- Each `sockets` entry is `tcp:HOST:PORT` or `udp:HOST:PORT`. Use `*` for any
+  host or any port (`udp:*:*`), and brackets for IPv6 (`tcp:[::1]:443`). A
+  malformed entry makes the manifest invalid.
+- A connection, or a datagram to an endpoint the list doesn't cover, throws.
+  Datagrams from unlisted endpoints never reach the plugin.
+- `openUdp({ localHost, localPort })` binds a UDP socket. `localHost` defaults
+  to `127.0.0.1`, and port `0` picks a free port. `send(host, port, data)` sends,
+  and `onMessage` gives `{ host, port, data }`.
+- A plugin may hold up to 64 sockets at a time.
+- Sockets close when the plugin unloads and when the page reloads or
+  navigates away. Close them yourself when you no longer need them.
+- The list tells users and reviewers what a plugin may reach. It is disclosure,
+  not a sandbox: plugins are full-trust page code.
+
 ## Matrix data
 
 `zam.matrix`:

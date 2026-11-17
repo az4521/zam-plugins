@@ -5,7 +5,7 @@
  * Imports only from within src/lib/plugins — no SDK, DOM, or localStorage.
  */
 import type { SettingsSchema } from "./settingsSchema";
-export declare const KNOWN_CAPABILITIES: readonly ["commands", "composer", "ui", "messages:read", "messages:send", "rooms:read", "storage", "network", "unsafe", "audio", "native", "frames", "presence", "call", "midi"];
+export declare const KNOWN_CAPABILITIES: readonly ["commands", "composer", "ui", "messages:read", "messages:send", "rooms:read", "storage", "network", "unsafe", "audio", "native", "frames", "presence", "call", "call:transport", "sockets", "midi"];
 export type Capability = (typeof KNOWN_CAPABILITIES)[number];
 /** A file the plugin ships beside its bundle, fetched from the same pinned
  *  commit and checked against its SHA-256 before use. */
@@ -48,6 +48,8 @@ export interface Manifest {
     settings?: SettingsSchema;
     assets?: ManifestFile[];
     native?: ManifestNative;
+    /** Endpoints zam.network may reach ("tcp:127.0.0.1:7656"; socketRules.ts). */
+    sockets?: string[];
 }
 /** Largest single file a plugin may ship (GitHub's own limit is 100 MB). */
 export declare const MAX_PLUGIN_FILE_BYTES: number;
