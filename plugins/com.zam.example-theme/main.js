@@ -4,7 +4,7 @@
 // zam.ui.addStyles(css) adds it to the app (after Zam's own styles, before the
 // user's own custom CSS box) and returns a handle that removes it again.
 //
-// Zam draws everything from CSS variables (--discord-bg, --discord-accent, ...)
+// Zam draws everything from CSS variables (--zam-bg, --zam-accent, ...)
 // and sets the user's chosen theme colours inline on <html>, so a rule that
 // overrides one needs `!important`. Anything else (a selector of your own, a
 // font, a radius) is ordinary CSS. Copy this file to start your own theme.
@@ -72,19 +72,19 @@ function rgb(hex) {
 export function css(values) {
     const s = SCHEMES[values.scheme] ?? SCHEMES.midnight;
     let out = `:root {
-    --discord-bg: ${s.bg} !important;
-    --discord-bg-rgb: ${rgb(s.bg)} !important;
-    --discord-bg-secondary: ${s.secondary} !important;
-    --discord-bg-secondary-rgb: ${rgb(s.secondary)} !important;
-    --discord-bg-tertiary: ${s.tertiary} !important;
-    --discord-bg-dark: ${s.tertiary} !important;
-    --discord-bg-hover: ${s.hover} !important;
-    --discord-bg-selected: ${s.selected} !important;
-    --discord-divider: ${s.divider} !important;
-    --discord-accent: ${s.accent[0]} !important;
-    --discord-accent-rgb: ${s.accent[1]} !important;
-    --discord-accent-hover: ${s.accentHover[0]} !important;
-    --discord-accent-hover-rgb: ${s.accentHover[1]} !important;
+    --zam-bg: ${s.bg} !important;
+    --zam-bg-rgb: ${rgb(s.bg)} !important;
+    --zam-bg-secondary: ${s.secondary} !important;
+    --zam-bg-secondary-rgb: ${rgb(s.secondary)} !important;
+    --zam-bg-tertiary: ${s.tertiary} !important;
+    --zam-bg-dark: ${s.tertiary} !important;
+    --zam-bg-hover: ${s.hover} !important;
+    --zam-bg-selected: ${s.selected} !important;
+    --zam-divider: ${s.divider} !important;
+    --zam-accent: ${s.accent[0]} !important;
+    --zam-accent-rgb: ${s.accent[1]} !important;
+    --zam-accent-hover: ${s.accentHover[0]} !important;
+    --zam-accent-hover-rgb: ${s.accentHover[1]} !important;
 }
 `;
     if (values.rounded) {

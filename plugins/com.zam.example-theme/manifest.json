@@ -1,7 +1,7 @@
 {
     "id": "com.zam.example-theme",
     "name": "Example Theme",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "An example theme: pick a colour scheme, and see how a plugin ships its own CSS. Copy it to make your own.",
     "author": "az4521",
     "entry": "main.js",

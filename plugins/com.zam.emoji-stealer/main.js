@@ -340,28 +340,28 @@ export function onload(zam) {
     }
 
     const INPUT_STYLE =
-        "width:100%;box-sizing:border-box;padding:6px 8px;border-radius:4px;border:1px solid var(--discord-divider);background:var(--discord-bg-dark);color:var(--discord-text-primary);font:inherit;font-size:14px;outline:none;";
+        "width:100%;box-sizing:border-box;padding:6px 8px;border-radius:4px;border:1px solid var(--zam-divider);background:var(--zam-bg-dark);color:var(--zam-text-primary);font:inherit;font-size:14px;outline:none;";
 
     function renderSteal(root, emoji, candidates) {
         root.style.cssText =
-            "width:300px;max-width:calc(100vw - 16px);padding:12px;display:flex;flex-direction:column;gap:10px;color:var(--discord-text-primary);font-size:14px;";
+            "width:300px;max-width:calc(100vw - 16px);padding:12px;display:flex;flex-direction:column;gap:10px;color:var(--zam-text-primary);font-size:14px;";
 
         // Multi-emoji message (from the message action): pick one first.
         if (candidates && candidates.length > 1) {
             const grid = el(
                 "div",
-                "display:flex;flex-wrap:wrap;gap:6px;padding-bottom:8px;border-bottom:1px solid var(--discord-divider);",
+                "display:flex;flex-wrap:wrap;gap:6px;padding-bottom:8px;border-bottom:1px solid var(--zam-divider);",
             );
             for (const cand of candidates) {
                 const b = el(
                     "button",
                     "padding:4px;border-radius:6px;cursor:pointer;background:" +
                         (cand.mxc === emoji.mxc
-                            ? "var(--discord-bg-hover)"
+                            ? "var(--zam-bg-hover)"
                             : "transparent") +
                         ";border:1px solid " +
                         (cand.mxc === emoji.mxc
-                            ? "rgb(var(--discord-accent-rgb))"
+                            ? "rgb(var(--zam-accent-rgb))"
                             : "transparent") +
                         ";",
                     { type: "button", title: cand.shortcode || "" },
@@ -386,7 +386,7 @@ export function onload(zam) {
         head.appendChild(
             el(
                 "img",
-                "width:48px;height:48px;object-fit:contain;flex-shrink:0;border-radius:4px;background:var(--discord-bg-dark);",
+                "width:48px;height:48px;object-fit:contain;flex-shrink:0;border-radius:4px;background:var(--zam-bg-dark);",
                 { src: emoji.src, alt: emoji.shortcode },
             ),
         );
@@ -394,7 +394,7 @@ export function onload(zam) {
         fieldWrap.appendChild(
             el(
                 "span",
-                "font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--discord-text-secondary);",
+                "font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--zam-text-secondary);",
                 { textContent: "Shortcode" },
             ),
         );
@@ -417,7 +417,7 @@ export function onload(zam) {
         root.appendChild(
             el(
                 "span",
-                "font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--discord-text-secondary);",
+                "font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--zam-text-secondary);",
                 { textContent: "Add to" },
             ),
         );
@@ -433,18 +433,18 @@ export function onload(zam) {
         );
         root.appendChild(list);
 
-        const status = el("div", "font-size:12px;min-height:0;color:var(--discord-text-secondary);");
+        const status = el("div", "font-size:12px;min-height:0;color:var(--zam-text-secondary);");
         root.appendChild(status);
 
         const actions = el("div", "display:flex;justify-content:flex-end;gap:8px;");
         const cancel = el(
             "button",
-            "padding:6px 12px;border-radius:4px;border:0;background:transparent;color:var(--discord-text-primary);cursor:pointer;font:inherit;",
+            "padding:6px 12px;border-radius:4px;border:0;background:transparent;color:var(--zam-text-primary);cursor:pointer;font:inherit;",
             { type: "button", textContent: "Cancel" },
         );
         const submit = el(
             "button",
-            "padding:6px 14px;border-radius:4px;border:0;background:rgb(var(--discord-accent-fill-rgb, var(--discord-accent-rgb)));color:#fff;cursor:pointer;font:inherit;font-weight:600;",
+            "padding:6px 14px;border-radius:4px;border:0;background:rgb(var(--zam-accent-fill-rgb, var(--zam-accent-rgb)));color:#fff;cursor:pointer;font:inherit;font-weight:600;",
             { type: "button", textContent: "Steal" },
         );
         actions.append(cancel, submit);
@@ -456,10 +456,10 @@ export function onload(zam) {
             status.textContent = text || "";
             status.style.color =
                 tone === "error"
-                    ? "rgb(var(--discord-danger-rgb))"
+                    ? "rgb(var(--zam-danger-rgb))"
                     : tone === "warn"
-                      ? "rgb(var(--discord-warning-rgb))"
-                      : "var(--discord-text-secondary)";
+                      ? "rgb(var(--zam-warning-rgb))"
+                      : "var(--zam-text-secondary)";
         };
         const resetConfirm = () => {
             confirmOverwrite = false;
@@ -481,10 +481,10 @@ export function onload(zam) {
                 const active = d === selected;
                 const row = el(
                     "button",
-                    "display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;padding:6px 8px;border-radius:4px;border:0;cursor:pointer;font:inherit;color:var(--discord-text-primary);background:" +
-                        (active ? "var(--discord-bg-hover)" : "transparent") +
+                    "display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;padding:6px 8px;border-radius:4px;border:0;cursor:pointer;font:inherit;color:var(--zam-text-primary);background:" +
+                        (active ? "var(--zam-bg-hover)" : "transparent") +
                         ";box-shadow:" +
-                        (active ? "inset 3px 0 0 rgb(var(--discord-accent-rgb))" : "none") +
+                        (active ? "inset 3px 0 0 rgb(var(--zam-accent-rgb))" : "none") +
                         ";",
                     { type: "button" },
                 );
@@ -496,7 +496,7 @@ export function onload(zam) {
                     }),
                 );
                 row.appendChild(
-                    el("span", "font-size:12px;color:var(--discord-text-muted);", {
+                    el("span", "font-size:12px;color:var(--zam-text-muted);", {
                         textContent: d.sub,
                     }),
                 );
@@ -509,7 +509,7 @@ export function onload(zam) {
             }
             if (!list.firstChild) {
                 list.appendChild(
-                    el("div", "padding:6px 8px;color:var(--discord-text-muted);", {
+                    el("div", "padding:6px 8px;color:var(--zam-text-muted);", {
                         textContent: "No matches",
                     }),
                 );
